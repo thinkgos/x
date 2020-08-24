@@ -53,10 +53,10 @@ hello worldhello worldhello worldhello worldhello worldhello worldhello world`,
 		require.NoError(t, err)
 		require.Equal(t, len(data), n)
 
-		t.Log(time.Now().Sub(start).String(), buf.Len())
+		t.Log(time.Since(start).String(), buf.Len())
 
 		// read
-		rd := make([]byte, len(data), len(data))
+		rd := make([]byte, len(data))
 		n, err = conn.Read(rd)
 		require.NoError(t, err)
 		require.Equal(t, len(data), n)
