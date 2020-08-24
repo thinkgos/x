@@ -1,4 +1,4 @@
-package outil
+package extbase64
 
 import (
 	"encoding/base64"

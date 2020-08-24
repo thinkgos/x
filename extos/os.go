@@ -1,4 +1,4 @@
-package sharp
+package extos
 
 import (
 	"unsafe"
