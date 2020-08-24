@@ -9,3 +9,11 @@
 [![License](https://img.shields.io/github/license/thinkgos/go-core-package)](https://github.com/thinkgos/go-core-package/raw/master/LICENSE)
 [![Tag](https://img.shields.io/github/v/tag/thinkgos/go-core-package)](https://github.com/thinkgos/go-core-package/tags)
 
+
+## reference package
+
+- [strext](https://github.com/thinkgos/strext) string extend package
+- [digital](https://github.com/thinkgos/digital) numerical treatment
+- [meter](https://github.com/thinkgos/meter) storage metering,like B,KB,MB,GB,TB,PB,EB
+- [container](https://github.com/thinkgos/container) collection container
+- [gpool](https://github.com/thinkgos/gpool) gpool is a high-performance and low-cost goroutine pool in Go
