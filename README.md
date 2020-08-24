@@ -10,6 +10,15 @@
 [![Tag](https://img.shields.io/github/v/tag/thinkgos/go-core-package)](https://github.com/thinkgos/go-core-package/tags)
 
 
+## Feature 
+
+- [lib]() 基础库包
+    - [algo]() 常用算法加密
+    - [bpool]() 切片缓存池
+    - [encrypt]() 加密流
+    - [password]() 密码加密和检查
+    - [ternary]() 常用三目运算
+
 ## reference package
 
 - [strext](https://github.com/thinkgos/strext) string extend package
