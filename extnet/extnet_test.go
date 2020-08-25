@@ -3,6 +3,8 @@ package extnet
 import (
 	"net"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestIsDomain(t *testing.T) {
@@ -106,4 +108,77 @@ func BenchmarkIsIntranet(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		IsIntranet("192.168.1.1")
 	}
+}
+
+func TestSplitHostPort(t *testing.T) {
+	tests := []struct {
+		name    string
+		addr    string
+		want    string
+		want1   uint16
+		wantErr bool
+	}{
+		{
+			"localhost:8080",
+			"localhost:8080",
+			"localhost",
+			8080,
+			false,
+		},
+		{
+			"127.0.0.1:8080",
+			"127.0.0.1:8080",
+			"127.0.0.1",
+			8080,
+			false,
+		},
+
+		{
+			"[::1]:8080",
+			"[::1]:8080",
+			"::1",
+			8080,
+			false,
+		},
+		{
+			"[::1%lo0]:8080",
+			"[::1%lo0]:8080",
+			"::1%lo0",
+			8080,
+			false,
+		},
+		{
+			"invalid addr",
+			"127.0.0.1",
+			"",
+			0,
+			true,
+		},
+		{
+			"invalid addr port",
+			"127.0.0.1:a",
+			"",
+			0,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := SplitHostPort(tt.addr)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SplitHostPort() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("SplitHostPort() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("SplitHostPort() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestJoinHostPort(t *testing.T) {
+	require.Equal(t, "localhost:8080", JoinHostPort("localhost", 8080))
 }

@@ -75,3 +75,12 @@ func SplitHostPort(addr string) (string, uint16, error) {
 	}
 	return host, uint16(port), nil
 }
+
+// JoinHostPort combines host and port into a network address of the
+// form "host:port". If host contains a colon, as found in literal
+// IPv6 addresses, then JoinHostPort returns "[host]:port".
+//
+// See func Dial for a description of the host and port parameters.
+func JoinHostPort(host string, port uint16) string {
+	return net.JoinHostPort(host, strconv.FormatUint(uint64(port), 10))
+}
