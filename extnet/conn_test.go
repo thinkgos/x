@@ -258,7 +258,7 @@ func TestSTCP_Forward_Direct(t *testing.T) {
 		for _, compress := range []bool{true, false} {
 			func() {
 				// server
-				ln, err := ListenWith("tcp", "127.0.0.1:0", BaseStcpAdorn(method, password), AdornSnappy(compress))
+				ln, err := ListenWith("tcp", "127.0.0.1:0", BaseAdornStcp(method, password), AdornSnappy(compress))
 				require.NoError(t, err)
 				defer ln.Close()
 				go func() {
@@ -285,7 +285,7 @@ func TestSTCP_Forward_Direct(t *testing.T) {
 
 				d := &Client{
 					Timeout:          time.Second,
-					BaseAdorn:        BaseStcpAdorn(method, password),
+					BaseAdorn:        BaseAdornStcp(method, password),
 					AfterAdornChains: AdornConnsChain{AdornSnappy(compress)},
 				}
 				cli, err := d.Dial("tcp", ln.Addr().String())
@@ -310,7 +310,7 @@ func TestSSSSTCP(t *testing.T) {
 	want := []byte("1flkdfladnfadkfna;kdnga;kdnva;ldk;adkfpiehrqeiphr23r[ingkdnv;ifefqiefn")
 
 	// server
-	ln, err := ListenWith("tcp", "127.0.0.1:0", BaseStcpAdorn(method, password), AdornSnappy(compress))
+	ln, err := ListenWith("tcp", "127.0.0.1:0", BaseAdornStcp(method, password), AdornSnappy(compress))
 	require.NoError(t, err)
 	defer ln.Close()
 	go func() {
@@ -339,7 +339,7 @@ func TestSSSSTCP(t *testing.T) {
 		func() {
 			d := Client{
 				Timeout:          time.Second,
-				BaseAdorn:        BaseStcpAdorn(method, password),
+				BaseAdorn:        BaseAdornStcp(method, password),
 				AfterAdornChains: AdornConnsChain{AdornSnappy(compress)},
 			}
 			cli, err := d.Dial("tcp", ln.Addr().String())

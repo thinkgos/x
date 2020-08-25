@@ -31,8 +31,8 @@ func BaseAdornTLSServer(conf *tls.Config) func(conn net.Conn) net.Conn {
 	}
 }
 
-// BaseStcpAdorn base adorn encrypt with method and password
-func BaseStcpAdorn(method, password string) func(conn net.Conn) net.Conn {
+// BaseAdornStcp base adorn encrypt with method and password
+func BaseAdornStcp(method, password string) func(conn net.Conn) net.Conn {
 	return func(conn net.Conn) net.Conn {
 		cip, err := encrypt.NewCipher(method, password)
 		if err != nil {
