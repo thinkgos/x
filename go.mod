@@ -6,7 +6,6 @@ require (
 	github.com/golang/snappy v0.0.1
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/stretchr/testify v1.6.1
-	gitlab.com/yawning/chacha20.git v0.0.0-20190903091407-6d1cb28dc72c
 	go.uber.org/atomic v1.6.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/sys v0.0.0-20200821140526-fda516888d29 // indirect

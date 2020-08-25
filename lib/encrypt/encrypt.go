@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package encrypt implement common encrypt and decrypt
 package encrypt
 
 import (
@@ -19,6 +20,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"errors"
+	"strconv"
 )
 
 // Cipher implement write and read cipher.Stream
@@ -35,16 +37,41 @@ type Cipher struct {
 // 		aes-128-ctr
 // 		aes-192-ctr
 // 		aes-256-ctr
+// 		aes-128-ofb
+// 		aes-192-ofb
+// 		aes-256-ofb
 // 		des-cfb
-// 		bf-cfb
+// 		des-ctr
+// 		des-ofb
+// 		blowfish-cfb
+// 		blowfish-ctr
+// 		blowfish-ofb
 // 		cast5-cfb
+// 		cast5-ctr
+// 		cast5-ofb
+// 		twofish-128-cfb
+// 		twofish-192-cfb
+// 		twofish-256-cfb
+// 		twofish-128-ctr
+// 		twofish-192-ctr
+// 		twofish-256-ctr
+// 		twofish-128-ofb
+// 		twofish-192-ofb
+// 		twofish-256-ofb
+// 		tea-cfb
+// 		tea-ctr
+// 		tea-ofb
+// 		xtea-cfb
+// 		xtea-ctr
+// 		xtea-ofb
 // 		rc4-md5
 // 		rc4-md5-6
 // 		chacha20
 // 		chacha20-ietf
+// 		salsa20
 func NewCipher(method, password string) (*Cipher, error) {
 	if password == "" {
-		return nil, errors.New("empty password")
+		return nil, errors.New("password required")
 	}
 	info, ok := GetCipherInfo(method)
 	if !ok {
@@ -65,6 +92,20 @@ func NewCipher(method, password string) (*Cipher, error) {
 		return nil, err
 	}
 	return &Cipher{wr, rd}, nil
+}
+
+func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, error) {
+	info, ok := GetCipherInfo(method)
+	if !ok {
+		return nil, errors.New("Unsupported encryption method: " + method)
+	}
+	if len(key) < info.KeyLen {
+		return nil, errors.New("invalid key size " + strconv.Itoa(len(key)))
+	}
+	if len(iv) < info.IvLen {
+		return nil, errors.New("invalid IV length " + strconv.Itoa(len(iv)))
+	}
+	return info.NewStream(key[:info.KeyLen], iv[:info.IvLen], encrypt)
 }
 
 // Evp2Key ...
