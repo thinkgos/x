@@ -24,8 +24,8 @@ type AdornConn func(conn net.Conn) net.Conn
 //  所以统计类的应放在链头,也就是AfterChains的第一个,最靠近出口
 type AdornConnsChain []AdornConn
 
-// TCPDialer tcp dialer
-type TCPDialer struct {
+// Client tcp dialer
+type Client struct {
 	Timeout          time.Duration   // timeout for dial
 	BaseAdorn        AdornConn       // base adorn conn
 	AfterAdornChains AdornConnsChain // chains after base
@@ -33,12 +33,12 @@ type TCPDialer struct {
 }
 
 // Dial connects to the address on the named network.
-func (sf *TCPDialer) Dial(network, addr string) (net.Conn, error) {
+func (sf *Client) Dial(network, addr string) (net.Conn, error) {
 	return sf.DialContext(context.Background(), network, addr)
 }
 
 // DialContext connects to the address on the named network using the provided context.
-func (sf *TCPDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+func (sf *Client) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	var d Dialer = &net.Dialer{Timeout: sf.Timeout}
 
 	if sf.Forward != nil {
@@ -94,10 +94,12 @@ type listener struct {
 	AfterChains   AdornConnsChain
 }
 
+// Listen announces on the local network address and afterChains
 func Listen(network string, addr string, afterChains ...AdornConn) (net.Listener, error) {
 	return ListenWith(network, addr, nil, afterChains...)
 }
 
+// ListenWith announces on the local network address , base  afterChains
 func ListenWith(network string, addr string, base AdornConn, afterChains ...AdornConn) (net.Listener, error) {
 	l, err := net.Listen(network, addr)
 	if err != nil {
@@ -106,6 +108,7 @@ func ListenWith(network string, addr string, base AdornConn, afterChains ...Ador
 	return NewListener(l, base, afterChains...), nil
 }
 
+// NewListener new listener
 func NewListener(inner net.Listener, base AdornConn, afterChains ...AdornConn) net.Listener {
 	l := new(listener)
 	l.Listener = inner

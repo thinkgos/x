@@ -46,7 +46,7 @@ func TestTCP_Forward_Direct(t *testing.T) {
 			defer ln.Close()
 
 			// client
-			d := &TCPDialer{
+			d := &Client{
 				Timeout:          time.Second,
 				AfterAdornChains: AdornConnsChain{AdornSnappy(compress)},
 			}
@@ -196,7 +196,7 @@ func TestTcpTls_Forward_Direct(t *testing.T) {
 				require.NoError(t, err)
 
 				// server
-				ln, err := ListenWith("tcp", "127.0.0.1:0", BaseAdornTlsServer(serverConfig), AdornSnappy(compress))
+				ln, err := ListenWith("tcp", "127.0.0.1:0", BaseAdornTLSServer(serverConfig), AdornSnappy(compress))
 				require.NoError(t, err)
 				defer ln.Close()
 
@@ -231,9 +231,9 @@ func TestTcpTls_Forward_Direct(t *testing.T) {
 				clientConfig, err := cliConfig.ClientConfig()
 				require.NoError(t, err)
 
-				d := &TCPDialer{
+				d := &Client{
 					Timeout:          time.Second,
-					BaseAdorn:        BaseAdornTlsClient(clientConfig),
+					BaseAdorn:        BaseAdornTLSClient(clientConfig),
 					AfterAdornChains: AdornConnsChain{AdornSnappy(compress)},
 				}
 
@@ -283,7 +283,7 @@ func TestSTCP_Forward_Direct(t *testing.T) {
 					}
 				}()
 
-				d := &TCPDialer{
+				d := &Client{
 					Timeout:          time.Second,
 					BaseAdorn:        BaseStcpAdorn(method, password),
 					AfterAdornChains: AdornConnsChain{AdornSnappy(compress)},
@@ -337,7 +337,7 @@ func TestSSSSTCP(t *testing.T) {
 	// client twice
 	for i := 0; i < 2; i++ {
 		func() {
-			d := TCPDialer{
+			d := Client{
 				Timeout:          time.Second,
 				BaseAdorn:        BaseStcpAdorn(method, password),
 				AfterAdornChains: AdornConnsChain{AdornSnappy(compress)},
@@ -388,7 +388,7 @@ func TestTCP_Forward(t *testing.T) {
 			defer ln.Close()
 
 			// client
-			d := &TCPDialer{
+			d := &Client{
 				Timeout:          time.Second,
 				AfterAdornChains: AdornConnsChain{AdornSnappy(compress)},
 				Forward:          &net.Dialer{Timeout: time.Second},

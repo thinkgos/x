@@ -17,15 +17,15 @@ import (
 	"github.com/thinkgos/go-core-package/lib/encrypt"
 )
 
-// BaseAdornTlsClient base adorn tls client
-func BaseAdornTlsClient(conf *tls.Config) func(conn net.Conn) net.Conn {
+// BaseAdornTLSClient base adorn tls client
+func BaseAdornTLSClient(conf *tls.Config) func(conn net.Conn) net.Conn {
 	return func(conn net.Conn) net.Conn {
 		return tls.Client(conn, conf)
 	}
 }
 
-// BaseAdornTlsServer base adorn tls server
-func BaseAdornTlsServer(conf *tls.Config) func(conn net.Conn) net.Conn {
+// BaseAdornTLSServer base adorn tls server
+func BaseAdornTLSServer(conf *tls.Config) func(conn net.Conn) net.Conn {
 	return func(conn net.Conn) net.Conn {
 		return tls.Server(conn, conf)
 	}

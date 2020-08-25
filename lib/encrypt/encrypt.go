@@ -94,6 +94,7 @@ func NewCipher(method, password string) (*Cipher, error) {
 	return &Cipher{wr, rd}, nil
 }
 
+// NewStream new stream
 func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, error) {
 	info, ok := GetCipherInfo(method)
 	if !ok {
