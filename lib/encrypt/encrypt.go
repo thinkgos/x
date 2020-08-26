@@ -109,6 +109,12 @@ func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, erro
 	return info.NewStream(key[:info.KeyLen], iv[:info.IvLen], encrypt)
 }
 
+// Valid method password is valid or not
+func Valid(method, password string) bool {
+	_, err := NewCipher(method, password)
+	return err == nil
+}
+
 // Evp2Key ...
 func Evp2Key(password string, keyLen int) (key []byte) {
 	const md5Len = 16
