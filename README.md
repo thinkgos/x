@@ -40,8 +40,8 @@
 
 ## Third party base package
 - [go-humanize](https://github.com/dustin/go-humanize) Go Humans! (formatters for units to human friendly sizes)
-
-
+- [atomic](https://github.com/uber-go/atomic) Wrapper types for sync/atomic which enforce atomic access
+- [multierr](https://github.com/uber-go/multierr) Combine one or more Go errors together
 ## Reference web
 - [render](https://github.com/thinkgos/render)  render extract from gin,but with optional build tags,useful for net/http or embedded systems,reduce program size
 - [binding](https://github.com/thinkgos/binding)  binding extract from gin,but with optional build tags,useful for net/http or embedded linux systems,reduce program size
