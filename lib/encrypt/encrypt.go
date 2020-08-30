@@ -79,13 +79,13 @@ func NewCipher(method, password string) (*Cipher, error) {
 	}
 	key := Evp2Key(password, info.KeyLen)
 
-	//hash(key) -> read IV
+	// hash(key) -> read IV
 	riv := sha256.New().Sum(key)[:info.IvLen]
 	rd, err := info.NewStream(key, riv, false)
 	if err != nil {
 		return nil, err
 	}
-	//hash(read IV) -> write IV
+	// hash(read IV) -> write IV
 	wiv := sha256.New().Sum(riv)[:info.IvLen]
 	wr, err := info.NewStream(key, wiv, true)
 	if err != nil {
@@ -115,7 +115,7 @@ func Valid(method, password string) bool {
 	return err == nil
 }
 
-// Evp2Key ...
+// Evp2Key evp to key
 func Evp2Key(password string, keyLen int) (key []byte) {
 	const md5Len = 16
 

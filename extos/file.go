@@ -77,7 +77,7 @@ func FileCopy(src, dest string) error {
 	}
 
 	// Set back file information.
-	if err = os.Chtimes(dest, si.ModTime(), si.ModTime()); err != nil {
+	if err := os.Chtimes(dest, si.ModTime(), si.ModTime()); err != nil {
 		return err
 	}
 	return os.Chmod(dest, si.Mode())
@@ -105,8 +105,8 @@ func IsFile(filePath string) bool {
 
 // IsExist checks whether a file or directory exists.
 // It returns false when the file or directory does not exist.
-func IsExist(path string) bool {
-	_, err := os.Stat(path)
+func IsExist(paths string) bool {
+	_, err := os.Stat(paths)
 	return err == nil || os.IsExist(err)
 }
 

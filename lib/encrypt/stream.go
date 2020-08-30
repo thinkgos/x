@@ -277,7 +277,7 @@ func (c *salsaStreamCipher) XORKeyStream(dst, src []byte) {
 
 	// It's difficult to avoid data copy here. src or dst maybe slice from
 	// Conn.Read/Write, which can't have padding.
-	copy(buf[padLen:], src[:])
+	copy(buf[padLen:], src)
 	salsa.XORKeyStream(buf, buf, &subNonce, &c.key)
 	copy(dst, buf[padLen:])
 

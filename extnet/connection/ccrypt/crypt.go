@@ -36,7 +36,7 @@ const (
 // Config defaults
 var (
 	DefaultHash = sha256.New
-	DefaultSalt = []byte(`dfaod..ga'.';dfa,;dfa',';023pkadb;j90[[q93jr4poemf';adm;lcv;aodfm'a;dlm[f09eqegoain;lfgankd;gihqp8e8hladknaldkpq3h4''`)
+	DefaultSalt = []byte(`dfaod..ga'.';dfa,;dfa',';023pkadb;j90[[q93jr4poemf';adm;lcv;aodfm'a;dlm[f09eqegoain;lfgankd;gihqp8e8hladknaldkpq3h4''`) // nolint: lll
 )
 
 // Config PBKDF2 key 生成的参数配置
@@ -55,9 +55,9 @@ type Conn struct {
 	w io.Writer
 }
 
-//New 创建一个aes cfb加密码的连接,通过提供的配置使用pbkdf2生成key,依靠key和hash生成iv
+// New 创建一个aes cfb加密码的连接,通过提供的配置使用pbkdf2生成key,依靠key和hash生成iv
 func New(c net.Conn, cfg Config) *Conn {
-	//set defaults
+	// set defaults
 	if len(cfg.Salt) == 0 {
 		cfg.Salt = DefaultSalt
 	}
@@ -74,7 +74,7 @@ func New(c net.Conn, cfg Config) *Conn {
 	// generate key
 	key := pbkdf2.Key([]byte(cfg.Password), cfg.Salt, cfg.Iterations, cfg.KeySize, cfg.Hash)
 
-	//key will be always be the correct size so this will never error
+	// key will be always be the correct size so this will never error
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err)

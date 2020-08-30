@@ -33,5 +33,4 @@ func TestErr(t *testing.T) {
 
 	assert.True(t, IsErrSocketNotConnected(errors.New("socket is not connected")))
 	assert.False(t, IsErrSocketNotConnected(nil))
-
 }

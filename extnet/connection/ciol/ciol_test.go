@@ -42,7 +42,7 @@ func mockConn(t *testing.T, data []byte, r, d int, options ...Options) *Conn {
 func TestConn_no_limiter(t *testing.T) {
 	data := []byte("hello world")
 	conn := mockConn(t, data, 0, 0)
-	defer conn.Close() //nolint: errcheck
+	defer conn.Close()
 
 	conn.SetReadLimit(1024)
 	assert.Equal(t, rate.Limit(0), conn.ReadLimit())
@@ -65,7 +65,7 @@ func TestConn_read_limiter(t *testing.T) {
 	conn := mockConn(t, data, 100, 0,
 		WithReadLimiter(rate.Limit(100), 10240),
 	)
-	conn.Close() //nolint: errcheck
+	conn.Close()
 }
 
 func TestConn_write_limiter(t *testing.T) {
@@ -73,7 +73,7 @@ func TestConn_write_limiter(t *testing.T) {
 	conn := mockConn(t, data, 0, 100,
 		WithWriteLimiter(rate.Limit(100), 10240),
 	)
-	conn.Close() //nolint: errcheck
+	conn.Close()
 }
 
 func TestConn_read_write_limiter(t *testing.T) {
@@ -82,7 +82,7 @@ func TestConn_read_write_limiter(t *testing.T) {
 		WithWriteLimiter(rate.Limit(100), 10240),
 		WithReadLimiter(rate.Limit(100), 10240),
 	)
-	defer conn.Close() //nolint: errcheck
+	defer conn.Close()
 
 	conn.SetReadLimit(1024)
 	assert.Equal(t, rate.Limit(1024), conn.ReadLimit())

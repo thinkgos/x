@@ -346,7 +346,6 @@ func TestSSSSTCP(t *testing.T) {
 			require.NoError(t, err)
 			defer cli.Close()
 
-			// t.Log(cli.LocalAddr())
 			_, err = cli.Write(want)
 			require.NoError(t, err)
 

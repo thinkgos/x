@@ -77,7 +77,7 @@ func ParseCrtAndKeyFile(crtFilename, keyFilename string) (ca *x509.Certificate, 
 }
 
 // LoadCrtAndKeyFile 读取根证书文件和私钥文件
-func LoadCrtAndKeyFile(crtFilename, keyFilename string) (crt []byte, key []byte, err error) {
+func LoadCrtAndKeyFile(crtFilename, keyFilename string) (crt, key []byte, err error) {
 	crt, err = ioutil.ReadFile(crtFilename)
 	if err != nil {
 		return

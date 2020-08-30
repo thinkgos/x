@@ -81,7 +81,7 @@ func (sf *Client) DialContext(ctx context.Context, network, addr string) (net.Co
 
 // DialContext dial context with dialer
 // WARNING: this can leak a goroutine for as long as the underlying Dialer implementation takes to timeout
-// A Conn returned from a successful Dial after the context has been cancelled will be immediately closed.
+// A Conn returned from a successful Dial after the context has been canceled will be immediately closed.
 func DialContext(ctx context.Context, d Dialer, network, address string) (net.Conn, error) {
 	var conn net.Conn
 	var err error
@@ -109,12 +109,12 @@ type listener struct {
 }
 
 // Listen announces on the local network address and afterChains
-func Listen(network string, addr string, afterChains ...AdornConn) (net.Listener, error) {
+func Listen(network, addr string, afterChains ...AdornConn) (net.Listener, error) {
 	return ListenWith(network, addr, nil, afterChains...)
 }
 
 // ListenWith announces on the local network address , base  afterChains
-func ListenWith(network string, addr string, base AdornConn, afterChains ...AdornConn) (net.Listener, error) {
+func ListenWith(network, addr string, base AdornConn, afterChains ...AdornConn) (net.Listener, error) {
 	l, err := net.Listen(network, addr)
 	if err != nil {
 		return nil, err

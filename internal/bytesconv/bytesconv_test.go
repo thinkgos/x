@@ -45,7 +45,8 @@ func TestBytes2Str(t *testing.T) {
 	}
 }
 
-var testString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+var testString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 var testBytes = []byte(testString)
 
 func BenchmarkStr2Bytes(b *testing.B) {

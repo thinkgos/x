@@ -58,5 +58,4 @@ this is a testing mock!this is a testing mock!this is a testing mock!this is a t
 		assert.Equal(t, uint64(nb), rc.Load())
 		assert.Equal(t, wc.Load()+rc.Load(), tc.Load())
 	}
-
 }

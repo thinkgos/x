@@ -41,7 +41,7 @@ type config struct {
 }
 
 // createSignFile 根据rootCA rootKey生成签发证书文件
-func createSignFile(rootCA *x509.Certificate, rootKey *rsa.PrivateKey, filenamePrefix string, cfg config) error {
+func createSignFile(rootCA *x509.Certificate, rootKey *rsa.PrivateKey, filenamePrefix string, cfg *config) error {
 	cert, key, err := createSign(rootCA, rootKey, cfg)
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func createSignFile(rootCA *x509.Certificate, rootKey *rsa.PrivateKey, filenameP
 }
 
 // createSign 根据rootCA rootKey生成签发证书
-func createSign(rootCA *x509.Certificate, rootKey *rsa.PrivateKey, cfg config) (cert []byte, key []byte, err error) {
+func createSign(rootCA *x509.Certificate, rootKey *rsa.PrivateKey, cfg *config) (cert, key []byte, err error) {
 	tpl := &x509.Certificate{
 		SerialNumber: big.NewInt(rand.Int63()),
 		Subject: pkix.Name{
@@ -83,7 +83,7 @@ func createSign(rootCA *x509.Certificate, rootKey *rsa.PrivateKey, cfg config) (
 		}
 	}
 
-	//生成公钥私钥对
+	// 生成公钥私钥对
 	var priKey *rsa.PrivateKey
 	priKey, err = rsa.GenerateKey(cryptoRand.Reader, 2048)
 	if err != nil {
@@ -103,11 +103,11 @@ func createSign(rootCA *x509.Certificate, rootKey *rsa.PrivateKey, cfg config) (
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(priKey),
 	})
-	return
+	return cert, key, nil
 }
 
 // CreateCAFile 生成ca证书文件
-func CreateCAFile(filenamePrefix string, cfg config) error {
+func CreateCAFile(filenamePrefix string, cfg *config) error {
 	ca, key, err := createCA(cfg)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func CreateCAFile(filenamePrefix string, cfg config) error {
 }
 
 // createCA 生成ca证书
-func createCA(cfg config) (ca []byte, key []byte, err error) {
+func createCA(cfg *config) (ca, key []byte, err error) {
 	var privateKey *rsa.PrivateKey
 
 	privateKey, err = rsa.GenerateKey(cryptoRand.Reader, 2048)
@@ -162,11 +162,11 @@ func createCA(cfg config) (ca []byte, key []byte, err error) {
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
 	})
-	return
+	return ca, key, nil
 }
 
 func TestGenerateCA(t *testing.T) {
-	err := CreateCAFile("ca", config{
+	err := CreateCAFile("ca", &config{
 		Names: names{
 			Country: "CN",
 		},
@@ -239,7 +239,7 @@ func TestGenerateCA(t *testing.T) {
 }
 
 func TestSign(t *testing.T) {
-	err := CreateCAFile("ca", config{
+	err := CreateCAFile("ca", &config{
 		CommonName: "server",
 		Names: names{
 			Country:      "CN",
@@ -252,7 +252,7 @@ func TestSign(t *testing.T) {
 	ca, key, err := ParseCrtAndKeyFile("ca.crt", "ca.key")
 	require.NoError(t, err)
 
-	err = createSignFile(ca, key, "server", config{
+	err = createSignFile(ca, key, "server", &config{
 		CommonName: "server.com",
 		Host:       []string{"server.com"},
 		Names: names{

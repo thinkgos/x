@@ -38,5 +38,5 @@ func TestMock(t *testing.T) {
 	mk.SetDeadline(time.Now())      // nolint: errcheck
 	mk.SetReadDeadline(time.Now())  // nolint: errcheck
 	mk.SetWriteDeadline(time.Now()) // nolint: errcheck
-	mk.Close()                      // nolint: errcheck
+	mk.Close()
 }

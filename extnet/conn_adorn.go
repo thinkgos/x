@@ -109,9 +109,9 @@ func AdornZlibLevelDict(compress bool, level int, dict []byte) func(net.Conn) ne
 }
 
 // AdornFlow cflow chain
-func AdornFlow(Wc *atomic.Uint64, Rc *atomic.Uint64, Tc *atomic.Uint64) func(conn net.Conn) net.Conn {
+func AdornFlow(wc, rc, tc *atomic.Uint64) func(conn net.Conn) net.Conn {
 	return func(conn net.Conn) net.Conn {
-		return &cflow.Conn{Conn: conn, Wc: Wc, Rc: Rc, Tc: Tc}
+		return &cflow.Conn{Conn: conn, Wc: wc, Rc: rc, Tc: tc}
 	}
 }
 

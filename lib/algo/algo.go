@@ -114,7 +114,8 @@ func AddSlashes(s string) string {
 	return buf.String()
 }
 
-// StripSlashes returns a string with backslashes stripped off. (\' becomes ' and so on.) Double backslashes (\\) are made into a single backslash (\).
+// StripSlashes returns a string with backslashes stripped off. (\' becomes ' and so on.)
+// Double backslashes (\\) are made into a single backslash (\).
 func StripSlashes(s string) string {
 	var buf bytes.Buffer
 
@@ -138,7 +139,8 @@ func StripSlashes(s string) string {
 	return buf.String()
 }
 
-// QuoteMeta returns a version of str with a backslash character (\) before every character that is among these: . \ + * ? [ ^ ] ( $ )
+// QuoteMeta returns a version of str with a backslash character (\)
+// before every character that is among these: . \ + * ? [ ^ ] ( $ )
 func QuoteMeta(s string) string {
 	var buf bytes.Buffer
 
