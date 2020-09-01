@@ -32,52 +32,184 @@ import (
 	"golang.org/x/crypto/chacha20"
 )
 
+type encDec struct {
+	key       []byte
+	iv        []byte
+	newCipher func(key []byte) (cipher.Block, error)
+	newStream func(block cipher.Block, iv []byte) cipher.Stream
+}
+
 // CipherInfo cipher information
 type CipherInfo struct {
-	KeyLen    int
-	IvLen     int
-	NewStream func(key, iv []byte, encrypt bool) (cipher.Stream, error)
+	keyLen        int
+	ivLen         int
+	newStream     func(*encDec) (cipher.Stream, error)
+	newCipher     func(key []byte) (cipher.Block, error)
+	newStreamFunc func(encrypt bool) func(block cipher.Block, iv []byte) cipher.Stream
 }
 
 var ciphers = map[string]CipherInfo{
-	"aes-128-cfb":     {16, 16, newAesCfbStream},
-	"aes-192-cfb":     {24, 16, newAesCfbStream},
-	"aes-256-cfb":     {32, 16, newAesCfbStream},
-	"aes-128-ctr":     {16, 16, newAesCtrStream},
-	"aes-192-ctr":     {24, 16, newAesCtrStream},
-	"aes-256-ctr":     {32, 16, newAesCtrStream},
-	"aes-128-ofb":     {16, 16, newAesOfbStream},
-	"aes-192-ofb":     {24, 16, newAesOfbStream},
-	"aes-256-ofb":     {32, 16, newAesOfbStream},
-	"des-cfb":         {8, 8, newDesCfbStream},
-	"des-ctr":         {8, 8, newDesCtrStream},
-	"des-ofb":         {8, 8, newDesOfbStream},
-	"blowfish-cfb":    {16, 8, newBlowfishCfbStream},
-	"blowfish-ctr":    {16, 8, newBlowfishCtrStream},
-	"blowfish-ofb":    {16, 8, newBlowfishOfbStream},
-	"cast5-cfb":       {16, 8, newCast5CfbStream},
-	"cast5-ctr":       {16, 8, newCast5CtrStream},
-	"cast5-ofb":       {16, 8, newCast5OfbStream},
-	"twofish-128-cfb": {16, 16, newTwofishCfbStream},
-	"twofish-192-cfb": {24, 16, newTwofishCfbStream},
-	"twofish-256-cfb": {32, 16, newTwofishCfbStream},
-	"twofish-128-ctr": {16, 16, newTwofishCtrStream},
-	"twofish-192-ctr": {24, 16, newTwofishCtrStream},
-	"twofish-256-ctr": {32, 16, newTwofishCtrStream},
-	"twofish-128-ofb": {16, 16, newTwofishOfbStream},
-	"twofish-192-ofb": {24, 16, newTwofishOfbStream},
-	"twofish-256-ofb": {32, 16, newTwofishOfbStream},
-	"tea-cfb":         {16, 8, newTeaCfbStream},
-	"tea-ctr":         {16, 8, newTeaCtrStream},
-	"tea-ofb":         {16, 8, newTeaOfbStream},
-	"xtea-cfb":        {16, 8, newXteaCfbStream},
-	"xtea-ctr":        {16, 8, newXteaCtrStream},
-	"xtea-ofb":        {16, 8, newXteaOfbStream},
-	"rc4-md5":         {16, 16, newRc4Md5Stream},
-	"rc4-md5-6":       {16, 6, newRc4Md5Stream},
-	"chacha20":        {32, 12, newChaCha20Stream},
-	"chacha20-ietf":   {32, 24, newChaCha20IETFStream},
-	"salsa20":         {32, 8, newSalsa20Stream},
+	"aes-128-cfb": {
+		16, 16, newStreamWithCipher,
+		aes.NewCipher, newCfbStreamFunc,
+	},
+	"aes-192-cfb": {
+		24, 16, newStreamWithCipher,
+		aes.NewCipher, newCfbStreamFunc,
+	},
+	"aes-256-cfb": {
+		32, 16, newStreamWithCipher,
+		aes.NewCipher, newCfbStreamFunc,
+	},
+	"aes-128-ctr": {
+		16, 16, newStreamWithCipher,
+		aes.NewCipher, newCtrStreamFunc,
+	},
+	"aes-192-ctr": {
+		24, 16, newStreamWithCipher,
+		aes.NewCipher, newCtrStreamFunc,
+	},
+	"aes-256-ctr": {
+		32, 16, newStreamWithCipher,
+		aes.NewCipher, newCtrStreamFunc,
+	},
+	"aes-128-ofb": {
+		16, 16, newStreamWithCipher,
+		aes.NewCipher, newOfbStreamFunc,
+	},
+	"aes-192-ofb": {
+		24, 16, newStreamWithCipher,
+		aes.NewCipher, newOfbStreamFunc,
+	},
+	"aes-256-ofb": {
+		32, 16, newStreamWithCipher,
+		aes.NewCipher, newOfbStreamFunc,
+	},
+	"des-cfb": {
+		8, 8, newStreamWithCipher,
+		des.NewCipher, newCfbStreamFunc,
+	},
+	"des-ctr": {
+		8, 8, newStreamWithCipher,
+		des.NewCipher, newCtrStreamFunc,
+	},
+	"des-ofb": {
+		8, 8, newStreamWithCipher,
+		des.NewCipher, newOfbStreamFunc,
+	},
+	"3des-cfb": {
+		24, 8, newStreamWithCipher,
+		des.NewTripleDESCipher, newCfbStreamFunc,
+	},
+	"3des-ctr": {
+		24, 8, newStreamWithCipher,
+		des.NewTripleDESCipher, newCtrStreamFunc,
+	},
+	"3des-ofb": {
+		24, 8, newStreamWithCipher,
+		des.NewTripleDESCipher, newOfbStreamFunc,
+	},
+	"blowfish-cfb": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return blowfish.NewCipher(k) }, newCfbStreamFunc},
+	"blowfish-ctr": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return blowfish.NewCipher(k) }, newCtrStreamFunc},
+	"blowfish-ofb": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return blowfish.NewCipher(k) }, newOfbStreamFunc},
+	"cast5-cfb": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return cast5.NewCipher(k) }, newCfbStreamFunc,
+	},
+	"cast5-ctr": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return cast5.NewCipher(k) }, newCtrStreamFunc,
+	},
+	"cast5-ofb": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return cast5.NewCipher(k) }, newOfbStreamFunc,
+	},
+	"twofish-128-cfb": {
+		16, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newCfbStreamFunc,
+	},
+	"twofish-192-cfb": {
+		24, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newCfbStreamFunc,
+	},
+	"twofish-256-cfb": {
+		32, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newCfbStreamFunc,
+	},
+	"twofish-128-ctr": {
+		16, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newCtrStreamFunc,
+	},
+	"twofish-192-ctr": {
+		24, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newCtrStreamFunc,
+	},
+	"twofish-256-ctr": {
+		32, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newCtrStreamFunc,
+	},
+	"twofish-128-ofb": {
+		16, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newOfbStreamFunc,
+	},
+	"twofish-192-ofb": {
+		24, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newOfbStreamFunc,
+	},
+	"twofish-256-ofb": {
+		32, 16, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return twofish.NewCipher(k) }, newOfbStreamFunc,
+	},
+	"tea-cfb": {
+		16, 8, newStreamWithCipher,
+		tea.NewCipher, newCfbStreamFunc,
+	},
+	"tea-ctr": {
+		16, 8, newStreamWithCipher,
+		tea.NewCipher, newCtrStreamFunc,
+	},
+	"tea-ofb": {
+		16, 8, newStreamWithCipher,
+		tea.NewCipher, newOfbStreamFunc,
+	},
+	"xtea-cfb": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return xtea.NewCipher(k) }, newCfbStreamFunc,
+	},
+	"xtea-ctr": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return xtea.NewCipher(k) }, newCtrStreamFunc,
+	},
+	"xtea-ofb": {
+		16, 8, newStreamWithCipher,
+		func(k []byte) (cipher.Block, error) { return xtea.NewCipher(k) }, newOfbStreamFunc,
+	},
+	"rc4-md5": {
+		16, 16, newRc4Md5Stream,
+		nil, empty,
+	},
+	"rc4-md5-6": {
+		16, 6, newRc4Md5Stream,
+		nil, empty,
+	},
+	"chacha20": {
+		32, 12, newChaCha20Stream,
+		nil, empty,
+	},
+	"chacha20-ietf": {
+		32, 24, newChaCha20IETFStream,
+		nil, empty,
+	},
+	"salsa20": {
+		32, 8, newSalsa20Stream,
+		nil, empty,
+	},
 }
 
 // GetCipherInfo 根据方法获得 Cipher information
@@ -85,6 +217,12 @@ func GetCipherInfo(method string) (info CipherInfo, ok bool) {
 	info, ok = ciphers[method]
 	return
 }
+
+// KeyLen return key len
+func (sf *CipherInfo) KeyLen() int { return sf.keyLen }
+
+// IvLen return iv len
+func (sf *CipherInfo) IvLen() int { return sf.ivLen }
 
 // CipherMethods 获取Cipher的所有支持方法
 func CipherMethods() []string {
@@ -101,157 +239,33 @@ func HasCipherMethod(method string) (ok bool) {
 	return
 }
 
-func newCfbStream(newCipher func(k []byte) (cipher.Block, error), key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	block, err := newCipher(key)
+func newStreamWithCipher(ec *encDec) (cipher.Stream, error) {
+	block, err := ec.newCipher(ec.key)
 	if err != nil {
 		return nil, err
 	}
-	if encrypt {
-		return cipher.NewCFBEncrypter(block, iv), nil
-	}
-	return cipher.NewCFBDecrypter(block, iv), nil
+	return ec.newStream(block, ec.iv), nil
 }
 
-func newCtrStream(newCipher func(k []byte) (cipher.Block, error), key, iv []byte) (cipher.Stream, error) {
-	block, err := newCipher(key)
-	if err != nil {
-		return nil, err
-	}
-	return cipher.NewCTR(block, iv), nil
-}
-
-func newOfbStream(newCipher func(k []byte) (cipher.Block, error), key, iv []byte) (cipher.Stream, error) {
-	block, err := newCipher(key)
-	if err != nil {
-		return nil, err
-	}
-	return cipher.NewOFB(block, iv), nil
-}
-
-func newAesCfbStream(key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	return newCfbStream(aes.NewCipher, key, iv, encrypt)
-}
-
-func newAesCtrStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newCtrStream(aes.NewCipher, key, iv)
-}
-
-func newAesOfbStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newOfbStream(aes.NewCipher, key, iv)
-}
-
-func newDesCfbStream(key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	return newCfbStream(des.NewCipher, key, iv, encrypt)
-}
-
-func newDesCtrStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newCtrStream(des.NewCipher, key, iv)
-}
-
-func newDesOfbStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newOfbStream(des.NewCipher, key, iv)
-}
-
-func newBlowfishCfbStream(key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	return newCfbStream(func(k []byte) (cipher.Block, error) {
-		return blowfish.NewCipher(k)
-	}, key, iv, encrypt)
-}
-
-func newBlowfishCtrStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newCtrStream(func(k []byte) (cipher.Block, error) {
-		return blowfish.NewCipher(k)
-	}, key, iv)
-}
-
-func newBlowfishOfbStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newOfbStream(func(k []byte) (cipher.Block, error) {
-		return blowfish.NewCipher(k)
-	}, key, iv)
-}
-
-func newCast5CfbStream(key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	return newCfbStream(func(k []byte) (cipher.Block, error) {
-		return cast5.NewCipher(k)
-	}, key, iv, encrypt)
-}
-
-func newCast5CtrStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newCtrStream(func(k []byte) (cipher.Block, error) {
-		return cast5.NewCipher(k)
-	}, key, iv)
-}
-
-func newCast5OfbStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newOfbStream(func(k []byte) (cipher.Block, error) {
-		return cast5.NewCipher(k)
-	}, key, iv)
-}
-func newTwofishCfbStream(key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	return newCfbStream(func(k []byte) (cipher.Block, error) {
-		return twofish.NewCipher(k)
-	}, key, iv, encrypt)
-}
-
-func newTwofishCtrStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newCtrStream(func(k []byte) (cipher.Block, error) {
-		return twofish.NewCipher(k)
-	}, key, iv)
-}
-func newTwofishOfbStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newOfbStream(func(k []byte) (cipher.Block, error) {
-		return twofish.NewCipher(k)
-	}, key, iv)
-}
-
-func newTeaCfbStream(key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	return newCfbStream(tea.NewCipher, key, iv, encrypt)
-}
-
-func newTeaCtrStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newCtrStream(tea.NewCipher, key, iv)
-}
-func newTeaOfbStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newOfbStream(tea.NewCipher, key, iv)
-}
-
-func newXteaCfbStream(key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	return newCfbStream(func(k []byte) (cipher.Block, error) {
-		return xtea.NewCipher(k)
-	}, key, iv, encrypt)
-}
-
-func newXteaCtrStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newCtrStream(func(k []byte) (cipher.Block, error) {
-		return xtea.NewCipher(k)
-	}, key, iv)
-}
-
-func newXteaOfbStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return newOfbStream(func(k []byte) (cipher.Block, error) {
-		return xtea.NewCipher(k)
-	}, key, iv)
-}
-
-func newRc4Md5Stream(key, iv []byte, _ bool) (cipher.Stream, error) {
+func newRc4Md5Stream(ec *encDec) (cipher.Stream, error) {
 	h := md5.New()
-	h.Write(key) // nolint: errcheck
-	h.Write(iv)  // nolint: errcheck
+	h.Write(ec.key) // nolint: errcheck
+	h.Write(ec.iv)  // nolint: errcheck
 	return rc4.NewCipher(h.Sum(nil))
 }
 
-func newChaCha20Stream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return chacha20.NewUnauthenticatedCipher(key, iv)
+func newChaCha20Stream(ec *encDec) (cipher.Stream, error) {
+	return chacha20.NewUnauthenticatedCipher(ec.key, ec.iv)
 }
 
-func newChaCha20IETFStream(key, iv []byte, _ bool) (cipher.Stream, error) {
-	return chacha20.NewUnauthenticatedCipher(key, iv)
+func newChaCha20IETFStream(ec *encDec) (cipher.Stream, error) {
+	return chacha20.NewUnauthenticatedCipher(ec.key, ec.iv)
 }
 
-func newSalsa20Stream(key, iv []byte, _ bool) (cipher.Stream, error) {
+func newSalsa20Stream(ec *encDec) (cipher.Stream, error) {
 	var c salsaStreamCipher
-	copy(c.nonce[:], iv[:8])
-	copy(c.key[:], key[:32])
+	copy(c.nonce[:], ec.iv[:8])
+	copy(c.key[:], ec.key[:32])
 	return &c, nil
 }
 
@@ -282,4 +296,23 @@ func (c *salsaStreamCipher) XORKeyStream(dst, src []byte) {
 	copy(dst, buf[padLen:])
 
 	c.counter += len(src)
+}
+
+func newCfbStreamFunc(encrypt bool) func(block cipher.Block, iv []byte) cipher.Stream {
+	if encrypt {
+		return cipher.NewCFBEncrypter
+	}
+	return cipher.NewCFBDecrypter
+}
+
+func newCtrStreamFunc(bool) func(block cipher.Block, iv []byte) cipher.Stream {
+	return cipher.NewCTR
+}
+
+func newOfbStreamFunc(bool) func(block cipher.Block, iv []byte) cipher.Stream {
+	return cipher.NewOFB
+}
+
+func empty(bool) func(block cipher.Block, iv []byte) cipher.Stream {
+	return func(block cipher.Block, iv []byte) cipher.Stream { return nil }
 }

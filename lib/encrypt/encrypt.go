@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package encrypt implement common encrypt and decrypt
+// Package encrypt implement common encrypt and decrypt for stream
 package encrypt
 
 import (
@@ -43,6 +43,9 @@ type Cipher struct {
 // 		des-cfb
 // 		des-ctr
 // 		des-ofb
+// 		3des-cfb
+// 		3des-ctr
+// 		3des-ofb
 // 		blowfish-cfb
 // 		blowfish-ctr
 // 		blowfish-ofb
@@ -75,19 +78,19 @@ func NewCipher(method, password string) (*Cipher, error) {
 	}
 	info, ok := GetCipherInfo(method)
 	if !ok {
-		return nil, errors.New("Unsupported encryption method: " + method)
+		return nil, errors.New("unsupported encryption method: " + method)
 	}
-	key := Evp2Key(password, info.KeyLen)
+	key := Evp2Key(password, info.keyLen)
 
 	// hash(key) -> read IV
-	riv := sha256.New().Sum(key)[:info.IvLen]
-	rd, err := info.NewStream(key, riv, false)
+	riv := sha256.New().Sum(key)[:info.IvLen()]
+	rd, err := info.newStream(&encDec{key, riv, info.newCipher, info.newStreamFunc(false)})
 	if err != nil {
 		return nil, err
 	}
 	// hash(read IV) -> write IV
-	wiv := sha256.New().Sum(riv)[:info.IvLen]
-	wr, err := info.NewStream(key, wiv, true)
+	wiv := sha256.New().Sum(riv)[:info.IvLen()]
+	wr, err := info.newStream(&encDec{key, wiv, info.newCipher, info.newStreamFunc(true)})
 	if err != nil {
 		return nil, err
 	}
@@ -98,15 +101,15 @@ func NewCipher(method, password string) (*Cipher, error) {
 func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, error) {
 	info, ok := GetCipherInfo(method)
 	if !ok {
-		return nil, errors.New("Unsupported encryption method: " + method)
+		return nil, errors.New("unsupported encryption method: " + method)
 	}
-	if len(key) < info.KeyLen {
+	if len(key) < info.KeyLen() {
 		return nil, errors.New("invalid key size " + strconv.Itoa(len(key)))
 	}
-	if len(iv) < info.IvLen {
+	if len(iv) < info.IvLen() {
 		return nil, errors.New("invalid IV length " + strconv.Itoa(len(iv)))
 	}
-	return info.NewStream(key[:info.KeyLen], iv[:info.IvLen], encrypt)
+	return info.newStream(&encDec{key[:info.keyLen], iv[:info.ivLen], info.newCipher, info.newStreamFunc(encrypt)})
 }
 
 // Valid method password is valid or not

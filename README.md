@@ -34,7 +34,7 @@
 - [digital](https://github.com/thinkgos/digital) numerical treatment
 - [meter](https://github.com/thinkgos/meter) storage metering,like B,KB,MB,GB,TB,PB,EB
 - [container](https://github.com/thinkgos/container) collection container
-- [gpool](https://github.com/thinkgos/gpool) gpool is a high-performance and low-cost goroutine pool in Go
+- [gpool](https://github.com/thinkgos/gpool) gpool is a high-performance and low-cost goroutine pool in Go, use [ants](https://github.com/panjf2000/ants) instead.
 - [wheel](https://github.com/thinkgos/wheel) time wheel library, which similar linux time wheel
 - [timing](https://github.com/thinkgos/timing) time scheduler
 

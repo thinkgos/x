@@ -15,6 +15,7 @@ func TestEncrypt(t *testing.T) {
 	password := "pass_word"
 	src := []byte("hello world")
 	for _, method := range CipherMethods() {
+		require.True(t, Valid(method, password))
 		require.True(t, HasCipherMethod(method))
 
 		cip, err := NewCipher(method, password)
