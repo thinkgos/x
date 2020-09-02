@@ -61,7 +61,11 @@ func TestSHA256(t *testing.T) {
 		args args
 		want string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "sha256",
+			args: args{s: "thinkgos"},
+			want: "75b95632b997d60ab858d58196d3a07196d280e7ed10c8eaeebebc8ef5be2ec4",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -81,7 +85,11 @@ func TestSHA512(t *testing.T) {
 		args args
 		want string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "sha512",
+			args: args{s: "thinkgos"},
+			want: "11fae529a07be46ed230cb0bac0e66c9b1a31b5a1a745c7048c31579cd55c5e757d9d90967117c08ed989baae99851b1dea54c338a7d9ed4b40dccb0a5aa1980",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
