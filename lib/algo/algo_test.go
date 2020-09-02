@@ -52,6 +52,45 @@ func TestSHA1(t *testing.T) {
 	}
 }
 
+func TestSHA256(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := SHA256(tt.args.s); got != tt.want {
+				t.Errorf("SHA256() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSHA512(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := SHA512(tt.args.s); got != tt.want {
+				t.Errorf("SHA512() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 func TestHash(t *testing.T) {
 	type args struct {
 		method Method

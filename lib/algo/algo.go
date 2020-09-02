@@ -53,6 +53,20 @@ func SHA1(s string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
+// SHA256 calculate the sha256 hash of a hex string.
+func SHA256(s string) string {
+	h := sha256.New()
+	h.Write([]byte(s)) // nolint: errCheck
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+// SHA512 calculate the sha512 hash of a hex string.
+func SHA512(s string) string {
+	h := sha512.New()
+	h.Write([]byte(s)) // nolint: errCheck
+	return hex.EncodeToString(h.Sum(nil))
+}
+
 // Hash Generate a hex hash value, expects: MD5, SHA1, SHA224, SHA256, SHA384, SHA512.
 func Hash(method Method, s string) string {
 	var h hash.Hash
