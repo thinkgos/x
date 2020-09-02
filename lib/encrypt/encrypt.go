@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package encrypt implement common encrypt and decrypt
+// Package encrypt implement common encrypt and decrypt for stream
 package encrypt
 
 import (
@@ -22,6 +22,12 @@ import (
 	"errors"
 	"strconv"
 )
+
+// KeyIvLen key and iv length interface
+type KeyIvLen interface {
+	KeyLen() int
+	IvLen() int
+}
 
 // Cipher implement write and read cipher.Stream
 type Cipher struct {
@@ -43,6 +49,9 @@ type Cipher struct {
 // 		des-cfb
 // 		des-ctr
 // 		des-ofb
+// 		3des-cfb
+// 		3des-ctr
+// 		3des-ofb
 // 		blowfish-cfb
 // 		blowfish-ctr
 // 		blowfish-ofb
@@ -73,40 +82,104 @@ func NewCipher(method, password string) (*Cipher, error) {
 	if password == "" {
 		return nil, errors.New("password required")
 	}
-	info, ok := GetCipherInfo(method)
-	if !ok {
-		return nil, errors.New("Unsupported encryption method: " + method)
-	}
-	key := Evp2Key(password, info.KeyLen)
 
-	// hash(key) -> read IV
-	riv := sha256.New().Sum(key)[:info.IvLen]
-	rd, err := info.NewStream(key, riv, false)
-	if err != nil {
-		return nil, err
+	if info, ok := complexCiphers[method]; ok {
+		key := Evp2Key(password, info.keyLen)
+
+		// hash(key) -> read IV
+		riv := sha256.New().Sum(key)[:info.IvLen()]
+		rd, err := info.newStream(&encDec{key, riv, info.newCipher, info.newEncrypt})
+		if err != nil {
+			return nil, err
+		}
+		// hash(read IV) -> write IV
+		wiv := sha256.New().Sum(riv)[:info.IvLen()]
+		wr, err := info.newStream(&encDec{key, wiv, info.newCipher, info.newDecrypt})
+		if err != nil {
+			return nil, err
+		}
+		return &Cipher{wr, rd}, nil
 	}
-	// hash(read IV) -> write IV
-	wiv := sha256.New().Sum(riv)[:info.IvLen]
-	wr, err := info.NewStream(key, wiv, true)
-	if err != nil {
-		return nil, err
+
+	if info, ok := simpleCiphers[method]; ok {
+		key := Evp2Key(password, info.keyLen)
+
+		// hash(key) -> read IV
+		riv := sha256.New().Sum(key)[:info.IvLen()]
+		wr, err := info.newStream(key[:info.keyLen], riv[:info.ivLen])
+		if err != nil {
+			return nil, err
+		}
+		// hash(read IV) -> write IV
+		wiv := sha256.New().Sum(riv)[:info.IvLen()]
+		rd, err := info.newStream(key[:info.keyLen], wiv[:info.ivLen])
+		if err != nil {
+			return nil, err
+		}
+		return &Cipher{wr, rd}, nil
 	}
-	return &Cipher{wr, rd}, nil
+	return nil, errors.New("unsupported encryption method: " + method)
 }
 
 // NewStream new stream
 func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, error) {
-	info, ok := GetCipherInfo(method)
-	if !ok {
-		return nil, errors.New("Unsupported encryption method: " + method)
+	check := func(info KeyIvLen) error {
+		if len(key) < info.KeyLen() {
+			return errors.New("invalid key size " + strconv.Itoa(len(key)))
+		}
+		if len(iv) < info.IvLen() {
+			return errors.New("invalid IV length " + strconv.Itoa(len(iv)))
+		}
+		return nil
 	}
-	if len(key) < info.KeyLen {
-		return nil, errors.New("invalid key size " + strconv.Itoa(len(key)))
+
+	if info, ok := complexCiphers[method]; ok {
+		if err := check(info); err != nil {
+			return nil, err
+		}
+		encdec := info.newDecrypt
+		if encrypt {
+			encdec = info.newEncrypt
+		}
+		return info.newStream(&encDec{key[:info.keyLen], iv[:info.ivLen], info.newCipher, encdec})
 	}
-	if len(iv) < info.IvLen {
-		return nil, errors.New("invalid IV length " + strconv.Itoa(len(iv)))
+
+	if info, ok := simpleCiphers[method]; ok {
+		if err := check(info); err != nil {
+			return nil, err
+		}
+		return info.newStream(key[:info.keyLen], iv[:info.ivLen])
 	}
-	return info.NewStream(key[:info.KeyLen], iv[:info.IvLen], encrypt)
+	return nil, errors.New("unsupported encryption method: " + method)
+}
+
+// GetCipher 根据方法获得 Cipher information
+func GetCipher(method string) (KeyIvLen, bool) {
+	if info, ok := complexCiphers[method]; ok {
+		return info, ok
+	}
+	info, ok := simpleCiphers[method]
+	return info, ok
+}
+
+// CipherMethods 获取Cipher的所有支持方法
+func CipherMethods() []string {
+	keys := make([]string, 0, len(complexCiphers)+len(simpleCiphers))
+	for k := range complexCiphers {
+		keys = append(keys, k)
+	}
+	for k := range simpleCiphers {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
+// HasCipherMethod 是否有method方法
+func HasCipherMethod(method string) (ok bool) {
+	if _, ok = complexCiphers[method]; !ok {
+		_, ok = simpleCiphers[method]
+	}
+	return
 }
 
 // Valid method password is valid or not
