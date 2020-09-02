@@ -84,13 +84,13 @@ func NewCipher(method, password string) (*Cipher, error) {
 
 	// hash(key) -> read IV
 	riv := sha256.New().Sum(key)[:info.IvLen()]
-	rd, err := info.newStream(&encDec{key, riv, info.newCipher, info.newStreamFunc(false)})
+	rd, err := info.newStream(&encDec{key, riv, info.newCipher, info.newEncrypt})
 	if err != nil {
 		return nil, err
 	}
 	// hash(read IV) -> write IV
 	wiv := sha256.New().Sum(riv)[:info.IvLen()]
-	wr, err := info.newStream(&encDec{key, wiv, info.newCipher, info.newStreamFunc(true)})
+	wr, err := info.newStream(&encDec{key, wiv, info.newCipher, info.newDecrypt})
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,11 @@ func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, erro
 	if len(iv) < info.IvLen() {
 		return nil, errors.New("invalid IV length " + strconv.Itoa(len(iv)))
 	}
-	return info.newStream(&encDec{key[:info.keyLen], iv[:info.ivLen], info.newCipher, info.newStreamFunc(encrypt)})
+	encdec := info.newDecrypt
+	if encrypt {
+		encdec = info.newEncrypt
+	}
+	return info.newStream(&encDec{key[:info.keyLen], iv[:info.ivLen], info.newCipher, encdec})
 }
 
 // Valid method password is valid or not

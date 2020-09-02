@@ -1,8 +1,10 @@
 package encrypt
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,7 +15,7 @@ func TestEncrypt(t *testing.T) {
 	require.Error(t, err)
 
 	password := "pass_word"
-	src := []byte("hello world")
+	plainText := []byte("hello world")
 	for _, method := range CipherMethods() {
 		require.True(t, Valid(method, password))
 		require.True(t, HasCipherMethod(method))
@@ -22,13 +24,13 @@ func TestEncrypt(t *testing.T) {
 		require.NoError(t, err)
 
 		// encrypt
-		encVal := make([]byte, len(src))
-		cip.Write.XORKeyStream(encVal, src)
+		cipherText := make([]byte, len(plainText))
+		cip.Write.XORKeyStream(cipherText, plainText)
 		// decrypt
-		decVal := make([]byte, len(encVal))
-		cip.Read.XORKeyStream(decVal, encVal)
+		got := make([]byte, len(cipherText))
+		cip.Read.XORKeyStream(got, cipherText)
 
-		require.Equal(t, decVal, src)
+		require.Equal(t, plainText, got, fmt.Errorf("method: %s", method))
 	}
 }
 
@@ -43,8 +45,9 @@ func TestStream(t *testing.T) {
 	password := "pass_word"
 	key := Evp2Key(password, 32)
 	iv := Evp2Key("password", 32)
-	src := []byte("hello world")
+	plainText := []byte("hello world")
 	for _, method := range CipherMethods() {
+		require.True(t, Valid(method, password))
 		require.True(t, HasCipherMethod(method))
 
 		wr, err := NewStream(method, key, iv, true)
@@ -53,12 +56,12 @@ func TestStream(t *testing.T) {
 		require.NoError(t, err)
 
 		// encrypt
-		encVal := make([]byte, len(src))
-		wr.XORKeyStream(encVal, src)
+		cipherText := make([]byte, len(plainText))
+		wr.XORKeyStream(cipherText, plainText)
 		// decrypt
-		decVal := make([]byte, len(encVal))
-		rd.XORKeyStream(decVal, encVal)
+		got := make([]byte, len(cipherText))
+		rd.XORKeyStream(got, cipherText)
 
-		require.Equal(t, decVal, src)
+		assert.Equal(t, plainText, got, fmt.Errorf("method: %s", method))
 	}
 }
