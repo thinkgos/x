@@ -16,17 +16,96 @@
 package encrypt
 
 import (
+	"crypto/aes"
 	"crypto/cipher"
+	"crypto/des"
 	"crypto/md5"
 	"crypto/sha256"
 	"errors"
 	"strconv"
+
+	"golang.org/x/crypto/tea"
 )
 
 // KeyIvLen key and iv length interface
 type KeyIvLen interface {
 	KeyLen() int
 	IvLen() int
+}
+
+// complexCipher cipher information
+type complexCipher struct {
+	keyLen     int
+	ivLen      int
+	newCipher  func(key []byte) (cipher.Block, error)
+	newEncrypt func(block cipher.Block, iv []byte) cipher.Stream
+	newDecrypt func(block cipher.Block, iv []byte) cipher.Stream
+}
+
+// KeyLen return key len
+func (sf complexCipher) KeyLen() int { return sf.keyLen }
+
+// IvLen return iv len
+func (sf complexCipher) IvLen() int { return sf.ivLen }
+
+// simpleCiphers cipher information
+type simpleCipher struct {
+	keyLen    int
+	ivLen     int
+	newStream func(key, iv []byte) (cipher.Stream, error)
+}
+
+// KeyLen return key len
+func (sf simpleCipher) KeyLen() int { return sf.keyLen }
+
+// IvLen return iv len
+func (sf simpleCipher) IvLen() int { return sf.ivLen }
+
+var complexCiphers = map[string]complexCipher{
+	"aes-128-cfb":     {16, 16, aes.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"aes-192-cfb":     {24, 16, aes.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"aes-256-cfb":     {32, 16, aes.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"aes-128-ctr":     {16, 16, aes.NewCipher, cipher.NewCTR, cipher.NewCTR},
+	"aes-192-ctr":     {24, 16, aes.NewCipher, cipher.NewCTR, cipher.NewCTR},
+	"aes-256-ctr":     {32, 16, aes.NewCipher, cipher.NewCTR, cipher.NewCTR},
+	"aes-128-ofb":     {16, 16, aes.NewCipher, cipher.NewOFB, cipher.NewOFB},
+	"aes-192-ofb":     {24, 16, aes.NewCipher, cipher.NewOFB, cipher.NewOFB},
+	"aes-256-ofb":     {32, 16, aes.NewCipher, cipher.NewOFB, cipher.NewOFB},
+	"des-cfb":         {8, 8, des.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"des-ctr":         {8, 8, des.NewCipher, cipher.NewCTR, cipher.NewCTR},
+	"des-ofb":         {8, 8, des.NewCipher, cipher.NewOFB, cipher.NewOFB},
+	"3des-cfb":        {24, 8, des.NewTripleDESCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"3des-ctr":        {24, 8, des.NewTripleDESCipher, cipher.NewCTR, cipher.NewCTR},
+	"3des-ofb":        {24, 8, des.NewTripleDESCipher, cipher.NewOFB, cipher.NewOFB},
+	"blowfish-cfb":    {16, 8, NewBlowfishCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"blowfish-ctr":    {16, 8, NewBlowfishCipher, cipher.NewCTR, cipher.NewCTR},
+	"blowfish-ofb":    {16, 8, NewBlowfishCipher, cipher.NewOFB, cipher.NewOFB},
+	"cast5-cfb":       {16, 8, NewCast5Cipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"cast5-ctr":       {16, 8, NewCast5Cipher, cipher.NewCTR, cipher.NewCTR},
+	"cast5-ofb":       {16, 8, NewCast5Cipher, cipher.NewOFB, cipher.NewOFB},
+	"twofish-128-cfb": {16, 16, NewTwofishCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"twofish-192-cfb": {24, 16, NewTwofishCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"twofish-256-cfb": {32, 16, NewTwofishCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"twofish-128-ctr": {16, 16, NewTwofishCipher, cipher.NewCTR, cipher.NewCTR},
+	"twofish-192-ctr": {24, 16, NewTwofishCipher, cipher.NewCTR, cipher.NewCTR},
+	"twofish-256-ctr": {32, 16, NewTwofishCipher, cipher.NewCTR, cipher.NewCTR},
+	"twofish-128-ofb": {16, 16, NewTwofishCipher, cipher.NewOFB, cipher.NewOFB},
+	"twofish-192-ofb": {24, 16, NewTwofishCipher, cipher.NewOFB, cipher.NewOFB},
+	"twofish-256-ofb": {32, 16, NewTwofishCipher, cipher.NewOFB, cipher.NewOFB},
+	"xtea-cfb":        {16, 8, NewXteaCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"xtea-ctr":        {16, 8, NewXteaCipher, cipher.NewCTR, cipher.NewCTR},
+	"xtea-ofb":        {16, 8, NewXteaCipher, cipher.NewOFB, cipher.NewOFB},
+	"tea-cfb":         {16, 8, tea.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
+	"tea-ctr":         {16, 8, tea.NewCipher, cipher.NewCTR, cipher.NewCTR},
+	"tea-ofb":         {16, 8, tea.NewCipher, cipher.NewOFB, cipher.NewOFB},
+}
+
+var simpleCiphers = map[string]simpleCipher{
+	"rc4-md5":       {16, 16, NewRc4Md5},
+	"rc4-md5-6":     {16, 6, NewRc4Md5},
+	"chacha20":      {32, 12, NewChacha20},
+	"chacha20-ietf": {32, 24, NewChacha20},
+	"salsa20":       {32, 8, NewSalsa20},
 }
 
 // Cipher implement write and read cipher.Stream
@@ -88,13 +167,13 @@ func NewCipher(method, password string) (*Cipher, error) {
 
 		// hash(key) -> read IV
 		riv := sha256.New().Sum(key)[:info.IvLen()]
-		rd, err := info.newStream(&encDec{key, riv, info.newCipher, info.newEncrypt})
+		rd, err := (&Stream{info.newEncrypt}).New(key, riv, info.newCipher)
 		if err != nil {
 			return nil, err
 		}
 		// hash(read IV) -> write IV
 		wiv := sha256.New().Sum(riv)[:info.IvLen()]
-		wr, err := info.newStream(&encDec{key, wiv, info.newCipher, info.newDecrypt})
+		wr, err := (&Stream{info.newDecrypt}).New(key, wiv, info.newCipher)
 		if err != nil {
 			return nil, err
 		}
@@ -141,7 +220,7 @@ func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, erro
 		if encrypt {
 			encdec = info.newEncrypt
 		}
-		return info.newStream(&encDec{key[:info.keyLen], iv[:info.ivLen], info.newCipher, encdec})
+		return (&Stream{encdec}).New(key[:info.keyLen], iv[:info.ivLen], info.newCipher)
 	}
 
 	if info, ok := simpleCiphers[method]; ok {
