@@ -31,6 +31,11 @@ import (
 	"golang.org/x/crypto/xtea"
 )
 
+type KeyIvLen interface {
+	KeyLen() int
+	IvLen() int
+}
+
 type encDec struct {
 	key       []byte
 	iv        []byte
@@ -38,8 +43,8 @@ type encDec struct {
 	newStream func(block cipher.Block, iv []byte) cipher.Stream
 }
 
-// CipherInfo cipher information
-type CipherInfo struct {
+// complexCipher cipher information
+type complexCipher struct {
 	keyLen     int
 	ivLen      int
 	newCipher  func(key []byte) (cipher.Block, error)
@@ -48,10 +53,26 @@ type CipherInfo struct {
 	newStream  func(*encDec) (cipher.Stream, error)
 }
 
-func emptyEncDec(cipher.Block, []byte) cipher.Stream { return nil }
-func emptyCipher([]byte) (cipher.Block, error)       { return nil, nil }
+// KeyLen return key len
+func (sf complexCipher) KeyLen() int { return sf.keyLen }
 
-var ciphers = map[string]CipherInfo{
+// IvLen return iv len
+func (sf complexCipher) IvLen() int { return sf.ivLen }
+
+// simpleCiphers cipher information
+type simpleCipher struct {
+	keyLen    int
+	ivLen     int
+	newStream func(key, iv []byte) (cipher.Stream, error)
+}
+
+// KeyLen return key len
+func (sf simpleCipher) KeyLen() int { return sf.keyLen }
+
+// IvLen return iv len
+func (sf simpleCipher) IvLen() int { return sf.ivLen }
+
+var complexCiphers = map[string]complexCipher{
 	"aes-128-cfb": {16, 16, aes.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter, newStreamWithCipher},
 	"aes-192-cfb": {24, 16, aes.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter, newStreamWithCipher},
 	"aes-256-cfb": {32, 16, aes.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter, newStreamWithCipher},
@@ -153,41 +174,16 @@ var ciphers = map[string]CipherInfo{
 		func(k []byte) (cipher.Block, error) { return xtea.NewCipher(k) },
 		cipher.NewOFB, cipher.NewOFB, newStreamWithCipher,
 	},
-	"tea-cfb":       {16, 8, tea.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter, newStreamWithCipher},
-	"tea-ctr":       {16, 8, tea.NewCipher, cipher.NewCTR, cipher.NewCTR, newStreamWithCipher},
-	"tea-ofb":       {16, 8, tea.NewCipher, cipher.NewOFB, cipher.NewOFB, newStreamWithCipher},
-	"rc4-md5":       {16, 16, emptyCipher, emptyEncDec, emptyEncDec, newRc4Md5Stream},
-	"rc4-md5-6":     {16, 6, emptyCipher, emptyEncDec, emptyEncDec, newRc4Md5Stream},
-	"chacha20":      {32, 12, emptyCipher, emptyEncDec, emptyEncDec, newChaCha20Stream},
-	"chacha20-ietf": {32, 24, emptyCipher, emptyEncDec, emptyEncDec, newChaCha20IETFStream},
-	"salsa20":       {32, 8, emptyCipher, emptyEncDec, emptyEncDec, newSalsa20Stream},
+	"tea-cfb": {16, 8, tea.NewCipher, cipher.NewCFBEncrypter, cipher.NewCFBDecrypter, newStreamWithCipher},
+	"tea-ctr": {16, 8, tea.NewCipher, cipher.NewCTR, cipher.NewCTR, newStreamWithCipher},
+	"tea-ofb": {16, 8, tea.NewCipher, cipher.NewOFB, cipher.NewOFB, newStreamWithCipher},
 }
-
-// GetCipherInfo 根据方法获得 Cipher information
-func GetCipherInfo(method string) (info CipherInfo, ok bool) {
-	info, ok = ciphers[method]
-	return
-}
-
-// KeyLen return key len
-func (sf *CipherInfo) KeyLen() int { return sf.keyLen }
-
-// IvLen return iv len
-func (sf *CipherInfo) IvLen() int { return sf.ivLen }
-
-// CipherMethods 获取Cipher的所有支持方法
-func CipherMethods() []string {
-	keys := make([]string, 0, len(ciphers))
-	for k := range ciphers {
-		keys = append(keys, k)
-	}
-	return keys
-}
-
-// HasCipherMethod 是否有method方法
-func HasCipherMethod(method string) (ok bool) {
-	_, ok = ciphers[method]
-	return
+var simpleCiphers = map[string]simpleCipher{
+	"rc4-md5":       {16, 16, newRc4Md5Stream},
+	"rc4-md5-6":     {16, 6, newRc4Md5Stream},
+	"chacha20":      {32, 12, newChaCha20Stream},
+	"chacha20-ietf": {32, 24, newChaCha20IETFStream},
+	"salsa20":       {32, 8, newSalsa20Stream},
 }
 
 func newStreamWithCipher(ec *encDec) (cipher.Stream, error) {
@@ -198,25 +194,25 @@ func newStreamWithCipher(ec *encDec) (cipher.Stream, error) {
 	return ec.newStream(block, ec.iv), nil
 }
 
-func newRc4Md5Stream(ec *encDec) (cipher.Stream, error) {
+func newRc4Md5Stream(key, iv []byte) (cipher.Stream, error) {
 	h := md5.New()
-	h.Write(ec.key) // nolint: errcheck
-	h.Write(ec.iv)  // nolint: errcheck
+	h.Write(key) // nolint: errcheck
+	h.Write(iv)  // nolint: errcheck
 	return rc4.NewCipher(h.Sum(nil))
 }
 
-func newChaCha20Stream(ec *encDec) (cipher.Stream, error) {
-	return chacha20.NewUnauthenticatedCipher(ec.key, ec.iv)
+func newChaCha20Stream(key, iv []byte) (cipher.Stream, error) {
+	return chacha20.NewUnauthenticatedCipher(key, iv)
 }
 
-func newChaCha20IETFStream(ec *encDec) (cipher.Stream, error) {
-	return chacha20.NewUnauthenticatedCipher(ec.key, ec.iv)
+func newChaCha20IETFStream(key, iv []byte) (cipher.Stream, error) {
+	return chacha20.NewUnauthenticatedCipher(key, iv)
 }
 
-func newSalsa20Stream(ec *encDec) (cipher.Stream, error) {
+func newSalsa20Stream(key, iv []byte) (cipher.Stream, error) {
 	var c salsaStreamCipher
-	copy(c.nonce[:], ec.iv[:8])
-	copy(c.key[:], ec.key[:32])
+	copy(c.key[:], key[:32])
+	copy(c.nonce[:], iv[:8])
 	return &c, nil
 }
 
