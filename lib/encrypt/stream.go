@@ -31,11 +31,6 @@ import (
 	"golang.org/x/crypto/xtea"
 )
 
-type KeyIvLen interface {
-	KeyLen() int
-	IvLen() int
-}
-
 type encDec struct {
 	key       []byte
 	iv        []byte

@@ -23,6 +23,12 @@ import (
 	"strconv"
 )
 
+// KeyIvLen key and iv length interface
+type KeyIvLen interface {
+	KeyLen() int
+	IvLen() int
+}
+
 // Cipher implement write and read cipher.Stream
 type Cipher struct {
 	Write cipher.Stream
@@ -147,7 +153,7 @@ func NewStream(method string, key, iv []byte, encrypt bool) (cipher.Stream, erro
 	return nil, errors.New("unsupported encryption method: " + method)
 }
 
-// GetCipherInfo 根据方法获得 Cipher information
+// GetCipher 根据方法获得 Cipher information
 func GetCipher(method string) (KeyIvLen, bool) {
 	if info, ok := complexCiphers[method]; ok {
 		return info, ok
