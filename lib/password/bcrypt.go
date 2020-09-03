@@ -14,7 +14,11 @@
 
 package password
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/thinkgos/go-core-package/internal/bytesconv"
+)
 
 var _ Verify = BCrypt{}
 
@@ -38,7 +42,7 @@ func (sf BCrypt) Hash(password string) (string, error) {
 		return "", err
 	}
 
-	return string(bytes), err
+	return bytesconv.Bytes2Str(bytes), err
 }
 
 // Compare password hash verification

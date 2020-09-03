@@ -7,12 +7,23 @@ import (
 )
 
 func TestSimple(t *testing.T) {
-	org := "hahaha"
-	cpt := NewSimple("")
+	t.Run("correct", func(t *testing.T) {
+		org := "hahaha"
+		cpt := NewSimple("")
 
-	dst, err := cpt.Hash(org)
-	require.Nil(t, err)
-	require.Nil(t, cpt.Compare(org, dst))
+		dst, err := cpt.Hash(org)
+		require.Nil(t, err)
+		require.NoError(t, cpt.Compare(org, dst))
+	})
+
+	t.Run("not correct", func(t *testing.T) {
+		org := "hahaha"
+		cpt := NewSimple("")
+
+		dst, err := cpt.Hash(org)
+		require.Nil(t, err)
+		require.Error(t, cpt.Compare("invalid", dst))
+	})
 }
 
 func BenchmarkSimple_Hash(b *testing.B) {

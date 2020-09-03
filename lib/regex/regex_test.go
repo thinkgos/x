@@ -16,6 +16,8 @@ package regex
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestIsEmail(t *testing.T) {
@@ -30,11 +32,12 @@ func TestIsEmail(t *testing.T) {
 		`wrong-ip@127.1.1.1.26`:        false,
 	}
 	for e, r := range emails {
-		b := IsEmail(e)
-		if b != r {
-			t.Errorf("IsEmail:\n Expect => %v\n Got => %v\n", r, b)
-		}
+		require.Equal(t, r, IsEmail(e))
 	}
+}
+
+func TestIsEmailRFC(t *testing.T) {
+	require.True(t, IsEmailRFC("test@example.com"))
 }
 
 func TestIsUrl(t *testing.T) {
@@ -50,10 +53,7 @@ func TestIsUrl(t *testing.T) {
 		"http://example":                             true,
 	}
 	for u, r := range urls {
-		b := IsURL(u)
-		if b != r {
-			t.Errorf("IsURL:\n Expect => %v\n Got => %v\n", r, b)
-		}
+		require.Equal(t, r, IsURL(u))
 	}
 }
 
