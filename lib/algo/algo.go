@@ -24,6 +24,8 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"hash"
+
+	"github.com/thinkgos/go-core-package/internal/bytesconv"
 )
 
 // algo method
@@ -42,28 +44,28 @@ type Method string
 // MD5 calculate the md5 hash of a hex string.
 func MD5(s string) string {
 	h := md5.New()
-	h.Write([]byte(s)) // nolint: errCheck
+	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
 	return hex.EncodeToString(h.Sum(nil))
 }
 
 // SHA1 calculate the sha1 hash of a hex string.
 func SHA1(s string) string {
 	h := sha1.New()
-	h.Write([]byte(s)) // nolint: errCheck
+	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
 	return hex.EncodeToString(h.Sum(nil))
 }
 
 // SHA256 calculate the sha256 hash of a hex string.
 func SHA256(s string) string {
 	h := sha256.New()
-	h.Write([]byte(s)) // nolint: errCheck
+	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
 	return hex.EncodeToString(h.Sum(nil))
 }
 
 // SHA512 calculate the sha512 hash of a hex string.
 func SHA512(s string) string {
 	h := sha512.New()
-	h.Write([]byte(s)) // nolint: errCheck
+	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
 	return hex.EncodeToString(h.Sum(nil))
 }
 
@@ -87,7 +89,7 @@ func Hash(method Method, s string) string {
 	default:
 		return s
 	}
-	h.Write([]byte(s)) // nolint: errCheck
+	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
 	return hex.EncodeToString(h.Sum(nil))
 }
 
@@ -97,21 +99,21 @@ func Hmac(method Method, s, key string) string {
 
 	switch method {
 	case MethodMD5:
-		mac = hmac.New(md5.New, []byte(key))
+		mac = hmac.New(md5.New, bytesconv.Str2Bytes(key))
 	case MethodSha1:
-		mac = hmac.New(sha1.New, []byte(key))
+		mac = hmac.New(sha1.New, bytesconv.Str2Bytes(key))
 	case MethodSha224:
-		mac = hmac.New(sha256.New224, []byte(key))
+		mac = hmac.New(sha256.New224, bytesconv.Str2Bytes(key))
 	case MethodSha256:
-		mac = hmac.New(sha256.New, []byte(key))
+		mac = hmac.New(sha256.New, bytesconv.Str2Bytes(key))
 	case MethodSha384:
-		mac = hmac.New(sha512.New384, []byte(key))
+		mac = hmac.New(sha512.New384, bytesconv.Str2Bytes(key))
 	case MethodSha512:
-		mac = hmac.New(sha512.New, []byte(key))
+		mac = hmac.New(sha512.New, bytesconv.Str2Bytes(key))
 	default:
 		return s
 	}
-	mac.Write([]byte(s)) // nolint: errCheck
+	mac.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
 	return hex.EncodeToString(mac.Sum(nil))
 }
 

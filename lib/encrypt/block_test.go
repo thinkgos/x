@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"errors"
 	"io"
 	"testing"
 
@@ -18,6 +19,10 @@ var encdec = []struct {
 	{cipher.NewCFBEncrypter, cipher.NewCFBDecrypter},
 	{cipher.NewCTR, cipher.NewCTR},
 	{cipher.NewOFB, cipher.NewOFB},
+}
+
+func mockErrorNewCipher([]byte) (cipher.Block, error) {
+	return nil, errors.New("mock error new cipher")
 }
 
 func TestBlockStream(t *testing.T) {
@@ -73,11 +78,41 @@ func TestBlockStream(t *testing.T) {
 		_, err = stream.Decrypt(key[:len(key)-1])
 		require.EqualError(t, err, ErrInputNotMoreABlock.Error())
 	})
+	t.Run("invalid cipher", func(t *testing.T) {
+		key := make([]byte, 16)
+		_, err := io.ReadFull(rand.Reader, key)
+		require.NoError(t, err)
+
+		bc := BlockStreamCipher{
+			cipher.NewCFBEncrypter,
+			cipher.NewCFBDecrypter,
+		}
+		_, err = bc.New(key, mockErrorNewCipher)
+		require.Error(t, err)
+	})
+	t.Run("invalid iv function or length", func(t *testing.T) {
+		plainText := []byte("hello world,this is golang language. welcome")
+		key := make([]byte, 16)
+		_, err := io.ReadFull(rand.Reader, key)
+		require.NoError(t, err)
+
+		bmc := BlockStreamCipher{
+			cipher.NewCFBEncrypter,
+			cipher.NewCFBDecrypter,
+		}
+		bc, err := bmc.New(key, aes.NewCipher, WithNewIv(func(block cipher.Block) ([]byte, error) {
+			return nil, errors.New("invalid iv")
+		}))
+		require.NoError(t, err)
+
+		_, err = bc.Encrypt(plainText)
+		require.Error(t, err)
+	})
 }
 
 func TestBlockModeCipher(t *testing.T) {
+	plainText := []byte("helloworld,this is golang language. welcome")
 	t.Run("aes", func(t *testing.T) {
-		plainText := []byte("helloworld,this is golang language. welcome")
 		for _, keySize := range aesKeySizes {
 			key := make([]byte, keySize)
 			_, err := io.ReadFull(rand.Reader, key)
@@ -104,5 +139,49 @@ func TestBlockModeCipher(t *testing.T) {
 			require.NoError(t, err)
 			assert.Equal(t, want, plainText)
 		}
+	})
+	t.Run("invalid cipher", func(t *testing.T) {
+		key := make([]byte, 16)
+		_, err := io.ReadFull(rand.Reader, key)
+		require.NoError(t, err)
+
+		bc := BlockModeCipher{
+			cipher.NewCBCEncrypter,
+			cipher.NewCBCDecrypter,
+		}
+		_, err = bc.New(key, mockErrorNewCipher)
+		require.Error(t, err)
+	})
+	t.Run("invalid iv function or length", func(t *testing.T) {
+		key := make([]byte, 16)
+		_, err := io.ReadFull(rand.Reader, key)
+		require.NoError(t, err)
+
+		bmc := BlockModeCipher{
+			cipher.NewCBCEncrypter,
+			cipher.NewCBCDecrypter,
+		}
+		bc, err := bmc.New(key, aes.NewCipher, WithNewIv(func(block cipher.Block) ([]byte, error) {
+			return nil, errors.New("invalid iv")
+		}))
+		require.NoError(t, err)
+
+		_, err = bc.Encrypt(plainText)
+		require.Error(t, err)
+	})
+	t.Run("invalid input cipher text", func(t *testing.T) {
+		key := make([]byte, 16)
+		_, err := io.ReadFull(rand.Reader, key)
+		require.NoError(t, err)
+
+		bmc := BlockModeCipher{
+			cipher.NewCBCEncrypter,
+			cipher.NewCBCDecrypter,
+		}
+		bc, err := bmc.New(key, aes.NewCipher)
+		require.NoError(t, err)
+
+		_, err = bc.Decrypt([]byte{})
+		require.Error(t, err)
 	})
 }
