@@ -35,7 +35,7 @@ func TestFileModeTime(t *testing.T) {
 func TestFileSize(t *testing.T) {
 	size, err := FileSize("testdata/a.go")
 	require.NoError(t, err)
-	assert.True(t, size > int64(17)) // windows is 18
+	assert.True(t, size >= int64(17)) // windows is 18
 
 	_, err = FileSize("files.go")
 	require.Error(t, err)
