@@ -26,16 +26,16 @@ import (
 func TestFileModeTime(t *testing.T) {
 	tm, err := FileModTime("testdata/a.go")
 	require.NoError(t, err)
-	assert.Less(t, int64(0), tm)
+	assert.True(t, tm > int64(0))
 
 	_, err = FileModTime("files.go")
 	require.Error(t, err)
 }
 
 func TestFileSize(t *testing.T) {
-	tm, err := FileSize("testdata/a.go")
+	size, err := FileSize("testdata/a.go")
 	require.NoError(t, err)
-	assert.Equal(t, int64(17), tm)
+	assert.True(t, size > int64(0))
 
 	_, err = FileSize("files.go")
 	require.Error(t, err)
