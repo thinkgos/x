@@ -1,4 +1,4 @@
-package strext
+package extstr
 
 import (
 	"github.com/thinkgos/go-core-package/internal/bytesconv"

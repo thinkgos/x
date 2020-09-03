@@ -1,4 +1,4 @@
-package strext
+package extstr
 
 import (
 	"reflect"
