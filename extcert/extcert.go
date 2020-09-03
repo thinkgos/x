@@ -19,6 +19,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"errors"
 	"io/ioutil"
 	"strings"
 )
@@ -29,6 +30,9 @@ const base64Prefix = "base64://"
 // ParseCrt 解析根证书
 func ParseCrt(b []byte) (*x509.Certificate, error) {
 	caBlock, _ := pem.Decode(b)
+	if caBlock == nil {
+		return nil, errors.New("invalid crt data")
+	}
 	return x509.ParseCertificate(caBlock.Bytes)
 }
 
@@ -44,6 +48,9 @@ func LoadCrtFile(filename string) (*x509.Certificate, error) {
 // ParseKey 解析私钥
 func ParseKey(b []byte) (*rsa.PrivateKey, error) {
 	keyBlock, _ := pem.Decode(b)
+	if keyBlock == nil {
+		return nil, errors.New("invalid key data")
+	}
 	return x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
 }
 

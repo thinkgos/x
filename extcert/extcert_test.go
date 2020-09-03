@@ -274,3 +274,15 @@ func TestSign(t *testing.T) {
 	os.Remove("server.crt")
 	os.Remove("server.key")
 }
+
+func TestInvalid(t *testing.T) {
+	t.Run("invalid key", func(t *testing.T) {
+		_, err := ParseKey([]byte{})
+		require.Error(t, err)
+	})
+
+	t.Run("invalid crt", func(t *testing.T) {
+		_, _, err := ParseCrtAndKey([]byte{}, []byte{})
+		require.Error(t, err)
+	})
+}
