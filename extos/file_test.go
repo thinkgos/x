@@ -16,41 +16,71 @@
 package extos
 
 import (
+	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+func TestFileModeTime(t *testing.T) {
+	tm, err := FileModTime("testdata/a.go")
+	require.NoError(t, err)
+	assert.Less(t, int64(0), tm)
+
+	_, err = FileModTime("files.go")
+	require.Error(t, err)
+}
+
+func TestFileSize(t *testing.T) {
+	tm, err := FileSize("testdata/a.go")
+	require.NoError(t, err)
+	assert.Equal(t, int64(17), tm)
+
+	_, err = FileSize("files.go")
+	require.Error(t, err)
+}
+
 func TestIsFile(t *testing.T) {
-	if !IsFile("file.go") {
-		t.Errorf("IsFile:\n Expect => %v\n Got => %v\n", true, false)
-	}
-
-	if IsFile("testdata") {
-		t.Errorf("IsFile:\n Expect => %v\n Got => %v\n", false, true)
-	}
-
-	if IsFile("files.go") {
-		t.Errorf("IsFile:\n Expect => %v\n Got => %v\n", false, true)
-	}
+	assert.True(t, IsFile("file.go"))
+	assert.False(t, IsFile("testdata"))
+	assert.False(t, IsFile("files.go"))
 }
 
 func TestIsExist(t *testing.T) {
 	t.Run("Pass a file name that exists", func(t *testing.T) {
-		if !IsExist("file.go") {
-			t.Errorf("IsExist:\n Expect => %v\n Got => %v\n", true, false)
-		}
+		assert.True(t, IsExist("file.go"))
 	})
 
 	t.Run("Pass a directory name that exists", func(t *testing.T) {
-		if !IsExist("testdata") {
-			t.Errorf("IsExist:\n Expect => %v\n Got => %v\n", true, false)
-		}
+		assert.True(t, IsExist("testdata"))
 	})
 
 	t.Run("Pass a directory name that does not exist", func(t *testing.T) {
-		if IsExist(".hg") {
-			t.Errorf("IsExist:\n Expect => %v\n Got => %v\n", false, true)
-		}
+		assert.False(t, IsExist(".hg"))
 	})
+}
+
+func TestFileCopy(t *testing.T) {
+	src := "testdata/a.go"
+	dst := "testdata/a_copy.go"
+
+	err := FileCopy(src, dst)
+	require.NoError(t, err)
+	defer os.Remove(dst)
+	require.True(t, IsExist(dst))
+}
+
+func TestWriteFile(t *testing.T) {
+	var filename = "testdata/x/y/z.go"
+	var testdata = []byte("hello world")
+	err := WriteFile(filename, testdata)
+	require.NoError(t, err)
+	os.RemoveAll("testdata/x")
+}
+
+func TestHasPermission(t *testing.T) {
+	assert.True(t, HasPermission("file.go"))
 }
 
 func BenchmarkIsFile(b *testing.B) {
