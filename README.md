@@ -20,6 +20,7 @@
 - [extrand](#extrand) 常用rand方法
 - [extrsa](#extrsa) rsa简易封装
 - [extssh](#extssh) ssh简易封装
+- [extstr](#extstr) 常用字符串封装
 - [gopool](#gopool) 协程池接口
 - [normalize](#normalize) 标准化
 - [lib](#lib) 基础库包
@@ -44,8 +45,11 @@
 - [go-humanize](https://github.com/dustin/go-humanize) Go Humans! (formatters for units to human friendly sizes)
 - [atomic](https://github.com/uber-go/atomic) Wrapper types for sync/atomic which enforce atomic access
 - [multierr](https://github.com/uber-go/multierr) Combine one or more Go errors together
+- [cast](https://github.com/spf13/cast) safe and easy casting from one type to another in Go
 - [archiver](https://github.com/mholt/archiver) Easily create & extract archives, and compress & decompress files of various formats
+- [inflection](https://github.com/jinzhu/inflection) Pluralizes and singularizes English nouns
 - [compress](https://github.com/klauspost/compress) Optimized compression packages
+
 ## Reference web
 - [render](https://github.com/thinkgos/render)  render extract from gin,but with optional build tags,useful for net/http or embedded systems,reduce program size
 - [binding](https://github.com/thinkgos/binding)  binding extract from gin,but with optional build tags,useful for net/http or embedded linux systems,reduce program size
