@@ -33,7 +33,11 @@ var (
 
 // BlockCrypt block crypt interface
 type BlockCrypt interface {
+	// BlockSize returns the mode's block size.
+	BlockSize() int
+	// Encrypt plain text. return iv + cipher text
 	Encrypt(plainText []byte) ([]byte, error)
+	// Encrypt cipher text(iv + cipher text). plain text.
 	Decrypt(cipherText []byte) ([]byte, error)
 }
 
@@ -144,6 +148,10 @@ func (sf *blockStream) apply(newIv func(block cipher.Block) ([]byte, error)) {
 	sf.ivFunc = newIv
 }
 
+func (sf *blockStream) BlockSize() int {
+	return sf.block.BlockSize()
+}
+
 func (sf *blockStream) Encrypt(plainText []byte) ([]byte, error) {
 	if len(plainText) == 0 {
 		return nil, ErrInputInvalidLength
@@ -185,6 +193,10 @@ type blockBlock struct {
 
 func (sf *blockBlock) apply(newIv func(block cipher.Block) ([]byte, error)) {
 	sf.ivFunc = newIv
+}
+
+func (sf *blockBlock) BlockSize() int {
+	return sf.block.BlockSize()
 }
 
 // Encrypt encrypt

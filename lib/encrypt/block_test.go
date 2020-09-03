@@ -36,6 +36,8 @@ func TestBlockStream(t *testing.T) {
 				blk, err := bc.New(key, aes.NewCipher, WithNewIv(RandIV))
 				require.NoError(t, err)
 
+				assert.Equal(t, aes.BlockSize, blk.BlockSize())
+
 				cipherText, err := blk.Encrypt(plainText)
 				require.NoError(t, err)
 				want, err := blk.Decrypt(cipherText)
@@ -87,6 +89,8 @@ func TestBlockModeCipher(t *testing.T) {
 			}
 			blk, err := bc.New(key, aes.NewCipher, WithNewIv(RandIV))
 			require.NoError(t, err)
+
+			assert.Equal(t, aes.BlockSize, blk.BlockSize())
 
 			cipherText, err := blk.Encrypt(plainText)
 			require.NoError(t, err)
