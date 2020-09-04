@@ -100,7 +100,7 @@ func TestBlockStream(t *testing.T) {
 			cipher.NewCFBEncrypter,
 			cipher.NewCFBDecrypter,
 		}
-		bc, err := bmc.New(key, aes.NewCipher, WithNewIv(func(block cipher.Block) ([]byte, error) {
+		bc, err := bmc.New(key, aes.NewCipher, WithGenerateIv(func(block cipher.Block) ([]byte, error) {
 			return nil, errors.New("invalid iv")
 		}))
 		require.NoError(t, err)
@@ -122,7 +122,7 @@ func TestBlockModeCipher(t *testing.T) {
 				cipher.NewCBCEncrypter,
 				cipher.NewCBCDecrypter,
 			}
-			blk, err := bc.New(key, aes.NewCipher, WithNewIv(RandIV))
+			blk, err := bc.New(key, aes.NewCipher, WithGenerateIv(RandIV))
 			require.NoError(t, err)
 
 			assert.Equal(t, aes.BlockSize, blk.BlockSize())
@@ -161,7 +161,7 @@ func TestBlockModeCipher(t *testing.T) {
 			cipher.NewCBCEncrypter,
 			cipher.NewCBCDecrypter,
 		}
-		bc, err := bmc.New(key, aes.NewCipher, WithNewIv(func(block cipher.Block) ([]byte, error) {
+		bc, err := bmc.New(key, aes.NewCipher, WithGenerateIv(func(block cipher.Block) ([]byte, error) {
 			return nil, errors.New("invalid iv")
 		}))
 		require.NoError(t, err)

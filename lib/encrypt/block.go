@@ -43,20 +43,26 @@ type BlockCrypt interface {
 
 // Apply apply
 type Apply interface {
-	apply(newIv func(block cipher.Block) ([]byte, error))
+	apply(generateIv func(block cipher.Block) ([]byte, error))
 }
 
 // Option option
 type Option func(apply Apply)
 
-// WithNewIv with custom new iv function
-func WithNewIv(newIv func(block cipher.Block) ([]byte, error)) Option {
+// WithNewIv with custom generate new iv function
+// Deprecated: use WithGenerateIv
+func WithNewIv(generateIv func(block cipher.Block) ([]byte, error)) Option {
+	return WithGenerateIv(generateIv)
+}
+
+// WithGenerateIv with custom generate new iv function
+func WithGenerateIv(generateIv func(block cipher.Block) ([]byte, error)) Option {
 	return func(apply Apply) {
-		apply.apply(newIv)
+		apply.apply(generateIv)
 	}
 }
 
-// RandIV rand iv generate by rand.Reader
+// RandIV generate rand iv by rand.Reader
 func RandIV(block cipher.Block) ([]byte, error) {
 	iv := make([]byte, block.BlockSize())
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
@@ -139,13 +145,13 @@ func (sf *BlockModeCipher) New(key []byte,
 
 type blockStream struct {
 	block      cipher.Block
-	ivFunc     func(block cipher.Block) ([]byte, error)
+	generateIv func(block cipher.Block) ([]byte, error)
 	newEncrypt func(block cipher.Block, iv []byte) cipher.Stream
 	newDecrypt func(block cipher.Block, iv []byte) cipher.Stream
 }
 
-func (sf *blockStream) apply(newIv func(block cipher.Block) ([]byte, error)) {
-	sf.ivFunc = newIv
+func (sf *blockStream) apply(generateIv func(block cipher.Block) ([]byte, error)) {
+	sf.generateIv = generateIv
 }
 
 func (sf *blockStream) BlockSize() int {
@@ -159,8 +165,8 @@ func (sf *blockStream) Encrypt(plainText []byte) ([]byte, error) {
 	blockSize := sf.block.BlockSize()
 
 	ivFunc := RandIV
-	if sf.ivFunc != nil {
-		ivFunc = sf.ivFunc
+	if sf.generateIv != nil {
+		ivFunc = sf.generateIv
 	}
 
 	iv, err := ivFunc(sf.block)
@@ -186,13 +192,13 @@ func (sf *blockStream) Decrypt(cipherText []byte) ([]byte, error) {
 
 type blockBlock struct {
 	block      cipher.Block
-	ivFunc     func(block cipher.Block) ([]byte, error)
+	generateIv func(block cipher.Block) ([]byte, error)
 	newEncrypt func(block cipher.Block, iv []byte) cipher.BlockMode
 	newDecrypt func(block cipher.Block, iv []byte) cipher.BlockMode
 }
 
-func (sf *blockBlock) apply(newIv func(block cipher.Block) ([]byte, error)) {
-	sf.ivFunc = newIv
+func (sf *blockBlock) apply(generateIv func(block cipher.Block) ([]byte, error)) {
+	sf.generateIv = generateIv
 }
 
 func (sf *blockBlock) BlockSize() int {
@@ -204,8 +210,8 @@ func (sf *blockBlock) Encrypt(plainText []byte) ([]byte, error) {
 	blockSize := sf.block.BlockSize()
 
 	ivFunc := RandIV
-	if sf.ivFunc != nil {
-		ivFunc = sf.ivFunc
+	if sf.generateIv != nil {
+		ivFunc = sf.generateIv
 	}
 	iv, err := ivFunc(sf.block)
 	if err != nil || len(iv) != blockSize {
@@ -226,7 +232,7 @@ func (sf *blockBlock) Decrypt(cipherText []byte) ([]byte, error) {
 		return nil, ErrInputNotMultipleBlocks
 	}
 	iv, msg := cipherText[:blockSize], cipherText[blockSize:]
-	cipher.NewCBCDecrypter(sf.block, iv).CryptBlocks(msg, msg)
+	sf.newDecrypt(sf.block, iv).CryptBlocks(msg, msg)
 	return PCKSUnPadding(msg)
 }
 

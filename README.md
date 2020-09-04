@@ -23,6 +23,7 @@
 - [extstr](#extstr) 常用字符串封装
 - [gopool](#gopool) 协程池接口
 - [normalize](#normalize) 标准化
+- [numeric](#numeric) 数值类型封装
 - [lib](#lib) 基础库包
     - [algo](#algo) 常用算法加密
     - [bpool](#bpool) 切片缓存池
@@ -33,11 +34,8 @@
 
 ## Reference package
 
-- [strext](https://github.com/thinkgos/strext) string extend package
-- [digital](https://github.com/thinkgos/digital) numerical treatment
 - [meter](https://github.com/thinkgos/meter) storage metering,like B,KB,MB,GB,TB,PB,EB
 - [container](https://github.com/thinkgos/container) collection container
-- [gpool](https://github.com/thinkgos/gpool) gpool is a high-performance and low-cost goroutine pool in Go, use [ants](https://github.com/panjf2000/ants) instead.
 - [wheel](https://github.com/thinkgos/wheel) time wheel library, which similar linux time wheel
 - [timing](https://github.com/thinkgos/timing) time scheduler
 
@@ -56,3 +54,5 @@
 - [gin-middlewares](https://github.com/thinkgos/gin-middlewares) middleware for Gin
 - [http-middlewares](https://github.com/thinkgos/http-middlewares)  middleware for net/http
 
+## other 
+- [ants](https://github.com/panjf2000/ants) ants is a high-performance and low-cost goroutine pool in Go
