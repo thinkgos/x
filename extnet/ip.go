@@ -102,16 +102,9 @@ func (n Numeric) To16() Numeric {
 
 // Equal is the equality test for 2 network numbers.
 func (n Numeric) Equal(n1 Numeric) bool {
-	if len(n) != len(n1) {
-		return false
-	}
-	if n[0] != n1[0] {
-		return false
-	}
-	if len(n) == IPv6Uint32Cnt {
-		return n[1] == n1[1] && n[2] == n1[2] && n[3] == n1[3]
-	}
-	return true
+	return len(n) == len(n1) &&
+		(len(n) == IPv4Uint32Cnt && n[0] == n1[0] ||
+			(len(n) == IPv6Uint32Cnt && n[0] == n1[0] && n[1] == n1[1] && n[2] == n1[2] && n[3] == n1[3]))
 }
 
 // Previous returns the previous logical network number.
