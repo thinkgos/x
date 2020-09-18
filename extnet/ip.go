@@ -20,12 +20,13 @@ import (
 	"net"
 )
 
+// IP uint32 count const defined
 const (
 	IPv4Uint32Cnt = 1
 	IPv6Uint32Cnt = 4
 )
 
-// IPv4 数值转换为net.ToIP
+// ToIP 数值转换为net.ToIP
 func ToIP(v uint32) net.IP {
 	return net.IPv4(byte(v>>24), byte(v>>16), byte(v>>8), byte(v))
 }
@@ -40,7 +41,7 @@ func IPv4(a uint32) Numeric {
 	return []uint32{a}
 }
 
-// IPv4 returns a equivalent Numeric to given uint32 number,
+// IPv6 returns a equivalent Numeric to given uint32 number,
 func IPv6(a, b, c, d uint32) Numeric {
 	return []uint32{a, b, c, d}
 }
