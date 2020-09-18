@@ -25,5 +25,5 @@ func TestBase64(t *testing.T) {
 
 func TestImage(t *testing.T) {
 	str := Image("png", []byte("helloworld"))
-	strings.HasPrefix(str, "data:image/%png;base64,")
+	require.True(t, strings.HasPrefix(str, "data:image/png;base64,"))
 }
