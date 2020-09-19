@@ -31,10 +31,24 @@ func ToIP(v uint32) net.IP {
 	return net.IPv4(byte(v>>24), byte(v>>16), byte(v>>8), byte(v))
 }
 
+// NextIP returns the next sequential ip.
+func NextIP(ip net.IP) net.IP {
+	return IP(ip).Next().ToIP()
+}
+
+// PreviousIP returns the previous sequential ip.
+func PreviousIP(ip net.IP) net.IP {
+	return IP(ip).Previous().ToIP()
+}
+
 // Numeric represents an ToIP address using uint32 as internal storage.
 // IPv4 uses 1 uint32
 // IPv6 uses 4 uint32.
 type Numeric []uint32
+
+// NumericMask represents an IP address using uint32 as internal storage.
+// IPv4 uses 1 uint32, while IPv6 uses 4 uint32.
+type NumericMask []uint32
 
 // IPv4 returns a equivalent Numeric to given uint32 number,
 func IPv4(a uint32) Numeric {
@@ -59,13 +73,35 @@ func IP(ip net.IP) Numeric {
 			return nil
 		}
 	}
-
 	nn := make(Numeric, parts)
 	for i := 0; i < parts; i++ {
 		idx := i * net.IPv4len
 		nn[i] = binary.BigEndian.Uint32(coercedIP[idx : idx+net.IPv4len])
 	}
 	return nn
+}
+
+// String returns the string form of the IP address ip.
+func (n Numeric) String() string {
+	return n.ToIP().String()
+}
+
+// Mask returns a new masked Numeric from given Numeric.
+func (n Numeric) Mask(m NumericMask) Numeric {
+	if len(m) != len(n) ||
+		!((len(m) == IPv4Uint32Cnt && len(n) == IPv4Uint32Cnt) ||
+			(len(m) == IPv6Uint32Cnt && len(n) == IPv6Uint32Cnt)) {
+		return nil
+	}
+
+	result := make(Numeric, len(m))
+	result[0] = m[0] & n[0]
+	if len(m) == IPv6Uint32Cnt {
+		result[1] = m[1] & n[1]
+		result[2] = m[2] & n[2]
+		result[3] = m[3] & n[3]
+	}
+	return result
 }
 
 // ToIP returns equivalent net.IP.
@@ -132,3 +168,47 @@ func (n Numeric) Next() Numeric {
 	}
 	return newIP
 }
+
+// IPNet represents a block of network numbers, also known as CIDR.
+type IPNet struct {
+	*net.IPNet
+	Number Numeric
+	Mask   NumericMask
+}
+
+// NewIPNet returns Network built using given net.IPNet.
+func NewIPNet(ipNet *net.IPNet) *IPNet {
+	return &IPNet{
+		ipNet,
+		IP(ipNet.IP),
+		NumericMask(IP(net.IP(ipNet.Mask))),
+	}
+}
+
+// Masked returns a new network conforming to new mask.
+func (n *IPNet) Masked(ones int) *IPNet {
+	mask := net.CIDRMask(ones, len(n.Number)*32)
+	return NewIPNet(&net.IPNet{IP: n.IP.Mask(mask), Mask: mask})
+}
+
+// ContainsNumeric returns true if Numeric is in range of IPNet, false otherwise.
+func (n *IPNet) ContainsNumeric(nn Numeric) bool {
+	return len(n.Mask) == len(nn) &&
+		(len(n.Mask) == IPv4Uint32Cnt && nn[0]&n.Mask[0] == n.Number[0]) ||
+		(len(n.Mask) == IPv6Uint32Cnt &&
+			nn[0]&n.Mask[0] == n.Number[0] && nn[1]&n.Mask[1] == n.Number[1] &&
+			nn[2]&n.Mask[2] == n.Number[2] && nn[3]&n.Mask[3] == n.Number[3])
+}
+
+// ContainsIPNet returns true if Network covers o, false otherwise
+func (n *IPNet) ContainsIPNet(o *IPNet) bool {
+	if len(n.Number) != len(o.Number) {
+		return false
+	}
+	nMaskSize, _ := n.IPNet.Mask.Size()
+	oMaskSize, _ := o.IPNet.Mask.Size()
+	return n.ContainsNumeric(o.Number) && nMaskSize <= oMaskSize
+}
+
+// Equal is the equality test for 2 networks.
+func (n *IPNet) Equal(n1 *IPNet) bool { return n.String() == n1.String() }
