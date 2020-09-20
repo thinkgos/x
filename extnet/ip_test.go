@@ -138,6 +138,28 @@ func TestNumeric_String(t *testing.T) {
 	require.Equal(t, "127.0.0.1", n.String())
 }
 
+func TestNumeric_Mask(t *testing.T) {
+	tests := []struct {
+		name string
+		mask NumericMask
+		ip   Numeric
+		want Numeric
+	}{
+		{"nop IPv4 mask", NumericMask{math.MaxUint32}, Numeric{math.MaxUint32}, Numeric{math.MaxUint32}},
+		{"nop IPv4 mask", NumericMask{math.MaxUint32 - math.MaxUint16}, Numeric{math.MaxUint16 + 1}, Numeric{math.MaxUint16 + 1}},
+		{"IPv4 masked", NumericMask{math.MaxUint32 - math.MaxUint16}, Numeric{math.MaxUint32}, Numeric{math.MaxUint32 - math.MaxUint16}},
+		{"nop IPv6 mask", NumericMask{math.MaxUint32, 0, 0, 0}, Numeric{math.MaxUint32, 0, 0, 0}, Numeric{math.MaxUint32, 0, 0, 0}},
+		{"nop IPv6 masked", NumericMask{math.MaxUint32 - math.MaxUint16, 0, 0, 0}, Numeric{math.MaxUint16 + 1, 0, 0, 0}, Numeric{math.MaxUint16 + 1, 0, 0, 0}},
+		{"IPv6 masked", NumericMask{math.MaxUint32 - math.MaxUint16, 0, 0, 0}, Numeric{math.MaxUint32, 0, 0, 0}, Numeric{math.MaxUint32 - math.MaxUint16, 0, 0, 0}},
+		{"Version mismatch", NumericMask{math.MaxUint32}, Numeric{math.MaxUint32, 0}, nil},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.ip.Mask(tt.mask))
+		})
+	}
+}
+
 func TestNumeric_To4_To16(t *testing.T) {
 	tests := []struct {
 		name string
@@ -225,24 +247,34 @@ func TestNumeric_Next(t *testing.T) {
 	}
 }
 
-func TestNumeric_Mask(t *testing.T) {
+func TestNetworkNumberBit(t *testing.T) {
+	t.Run("invalid posistion", func(t *testing.T) {
+		n := IP(net.ParseIP("128.0.0.0"))
+		bit, err := n.Bit(33)
+		assert.Error(t, err)
+		assert.False(t, bit)
+	})
 	tests := []struct {
 		name string
-		mask NumericMask
 		ip   Numeric
-		want Numeric
+		ones map[uint]bool
 	}{
-		{"nop IPv4 mask", NumericMask{math.MaxUint32}, Numeric{math.MaxUint32}, Numeric{math.MaxUint32}},
-		{"nop IPv4 mask", NumericMask{math.MaxUint32 - math.MaxUint16}, Numeric{math.MaxUint16 + 1}, Numeric{math.MaxUint16 + 1}},
-		{"IPv4 masked", NumericMask{math.MaxUint32 - math.MaxUint16}, Numeric{math.MaxUint32}, Numeric{math.MaxUint32 - math.MaxUint16}},
-		{"nop IPv6 mask", NumericMask{math.MaxUint32, 0, 0, 0}, Numeric{math.MaxUint32, 0, 0, 0}, Numeric{math.MaxUint32, 0, 0, 0}},
-		{"nop IPv6 masked", NumericMask{math.MaxUint32 - math.MaxUint16, 0, 0, 0}, Numeric{math.MaxUint16 + 1, 0, 0, 0}, Numeric{math.MaxUint16 + 1, 0, 0, 0}},
-		{"IPv6 masked", NumericMask{math.MaxUint32 - math.MaxUint16, 0, 0, 0}, Numeric{math.MaxUint32, 0, 0, 0}, Numeric{math.MaxUint32 - math.MaxUint16, 0, 0, 0}},
-		{"Version mismatch", NumericMask{math.MaxUint32}, Numeric{math.MaxUint32, 0}, nil},
+		{"128.0.0.0", IP(net.ParseIP("128.0.0.0")), map[uint]bool{31: true}},
+		{"1.1.1.1", IP(net.ParseIP("1.1.1.1")), map[uint]bool{0: true, 8: true, 16: true, 24: true}},
+		{"8000::", IP(net.ParseIP("8000::")), map[uint]bool{127: true}},
+		{"8000::8000", IP(net.ParseIP("8000::8000")), map[uint]bool{127: true, 15: true}},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.ip.Mask(tt.mask))
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			for i := uint(0); i < uint(len(tc.ip)*32); i++ {
+				bit, err := tc.ip.Bit(i)
+				assert.NoError(t, err)
+				if _, exist := tc.ones[i]; exist {
+					assert.True(t, bit)
+				} else {
+					assert.False(t, bit)
+				}
+			}
 		})
 	}
 }

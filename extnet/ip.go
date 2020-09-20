@@ -16,6 +16,7 @@ package extnet
 
 import (
 	"encoding/binary"
+	"fmt"
 	"math"
 	"net"
 )
@@ -25,6 +26,9 @@ const (
 	IPv4Uint32Cnt = 1
 	IPv6Uint32Cnt = 4
 )
+
+// ErrInvalidBitPosition is returned when bits requested is not valid.
+var ErrInvalidBitPosition = fmt.Errorf("bit position not valid")
 
 // ToIP 数值转换为net.ToIP
 func ToIP(v uint32) net.IP {
@@ -167,6 +171,17 @@ func (n Numeric) Next() Numeric {
 		}
 	}
 	return newIP
+}
+
+// Bit returns uint32 representing the bit value at given position, e.g.,
+// "128.0.0.0" has bit value of 1 at position 31, and 0 for positions 30 to 0.
+func (n Numeric) Bit(position uint) (bool, error) {
+	if int(position) > len(n)*32-1 {
+		return false, ErrInvalidBitPosition
+	}
+	idx := len(n) - 1 - int(position/32)
+	// Mod 31 to get array index.
+	return (n[idx]>>(position&(32-1)))&1 == 1, nil
 }
 
 // IPNet represents a block of network numbers, also known as CIDR.
