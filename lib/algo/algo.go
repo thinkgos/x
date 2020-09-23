@@ -28,19 +28,6 @@ import (
 	"github.com/thinkgos/go-core-package/internal/bytesconv"
 )
 
-// algo method
-const (
-	MethodMD5    Method = "md5"
-	MethodSha1   Method = "sha1"
-	MethodSha224 Method = "sha224"
-	MethodSha256 Method = "sha256"
-	MethodSha384 Method = "sha384"
-	MethodSha512 Method = "sha512"
-)
-
-// Method algo method
-type Method string
-
 // MD5 calculate the md5 hash of a hex string.
 func MD5(s string) string {
 	h := md5.New()
@@ -69,52 +56,55 @@ func SHA512(s string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// Hash Generate a hex hash value, expects: MD5, SHA1, SHA224, SHA256, SHA384, SHA512.
-func Hash(method Method, s string) string {
+// Hash Generate a hex hash value,
+// expects: md5, sha1, sha224, sha256, sha384, sha512.
+func Hash(method, val string) string {
 	var h hash.Hash
 
 	switch method {
-	case MethodMD5:
+	case "md5":
 		h = md5.New()
-	case MethodSha1:
+	case "sha1":
 		h = sha1.New()
-	case MethodSha224:
+	case "sha224":
 		h = sha256.New224()
-	case MethodSha256:
+	case "sha256":
 		h = sha256.New()
-	case MethodSha384:
+	case "sha384":
 		h = sha512.New384()
-	case MethodSha512:
+	case "sha512":
 		h = sha512.New()
 	default:
-		return s
+		return val
 	}
-	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
+	h.Write(bytesconv.Str2Bytes(val)) // nolint: errCheck
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// Hmac Generate a hex hash value with the key, expects: MD5, SHA1, SHA224, SHA256, SHA384, SHA512.
-func Hmac(method Method, s, key string) string {
-	var mac hash.Hash
+// Hmac Generate a hex hash value with the key,
+// expects: hmacmd5, hmacsha1, hmacsha224, hmacsha256, hmacsha384, hmacsha512.
+func Hmac(method, key, val string) string {
+	var f func() hash.Hash
 
 	switch method {
-	case MethodMD5:
-		mac = hmac.New(md5.New, bytesconv.Str2Bytes(key))
-	case MethodSha1:
-		mac = hmac.New(sha1.New, bytesconv.Str2Bytes(key))
-	case MethodSha224:
-		mac = hmac.New(sha256.New224, bytesconv.Str2Bytes(key))
-	case MethodSha256:
-		mac = hmac.New(sha256.New, bytesconv.Str2Bytes(key))
-	case MethodSha384:
-		mac = hmac.New(sha512.New384, bytesconv.Str2Bytes(key))
-	case MethodSha512:
-		mac = hmac.New(sha512.New, bytesconv.Str2Bytes(key))
+	case "hmacmd5":
+		f = md5.New
+	case "hmacsha1":
+		f = sha1.New
+	case "hmacsha224":
+		f = sha256.New224
+	case "hmacsha256":
+		f = sha256.New
+	case "hmacsha384":
+		f = sha512.New384
+	case "hmacsha512":
+		f = sha512.New
 	default:
-		return s
+		return val
 	}
-	mac.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
-	return hex.EncodeToString(mac.Sum(nil))
+	h := hmac.New(f, bytesconv.Str2Bytes(key))
+	h.Write(bytesconv.Str2Bytes(val)) // nolint: errCheck
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 // AddSlashes returns a string with backslashes added before characters that need to be escaped.
