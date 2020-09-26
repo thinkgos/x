@@ -32,4 +32,3 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         go test -v -covermode=atomic ./...
-        bash <(curl -s https://codecov.io/bash)
