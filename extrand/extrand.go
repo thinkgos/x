@@ -33,11 +33,15 @@ const (
 	letterIntIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as letterIntIdxBits
 	letterIntIdxMax  = 63 / letterStrIdxBits   // # of letter indices fitting in 63 bits
 
+	letterSymbol        = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+,.?/:;{}[]`~"
+	letterSymbolIdxBits = 7                          // 7 bits to represent a letter index
+	letterSymbolIdxMask = 1<<letterSymbolIdxBits - 1 // All 1-bits, as many as letterStrIdxBits
+	letterSymbolIdxMax  = 63 / letterSymbolIdxBits   // # of letter indices fitting in 63 bits
 )
 
 var globalRand = rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63() + rand.Int63()))
 
-// RandString rand string  with give length
+// RandString rand string with give length
 func RandString(length int) string {
 	b := make([]byte, length)
 	// A rand.Int63() generates 63 random bits, enough for letterStrIdxMax letters!
@@ -72,4 +76,22 @@ func RandInt64(length int) int64 {
 		remain--
 	}
 	return val
+}
+
+// RandSymbol rand symbol with give length
+func RandSymbol(length int) string {
+	b := make([]byte, length)
+	// A rand.Int63() generates 63 random bits, enough for letterSymbolIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), letterSymbolIdxMax; i < length; {
+		if remain == 0 {
+			cache, remain = globalRand.Int63(), letterSymbolIdxMax
+		}
+		if idx := int(cache & letterSymbolIdxMask); idx < len(letterSymbol) {
+			b[i] = letterSymbol[idx]
+			i++
+		}
+		cache >>= letterSymbolIdxBits
+		remain--
+	}
+	return bytesconv.Bytes2Str(b)
 }

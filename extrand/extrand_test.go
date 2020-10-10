@@ -7,6 +7,7 @@ import (
 func TestImproveCoverage(t *testing.T) {
 	t.Log(RandInt64(16))
 	t.Log(RandString(16))
+	t.Log(RandSymbol(16))
 }
 
 func BenchmarkRandString(b *testing.B) {
@@ -18,5 +19,11 @@ func BenchmarkRandString(b *testing.B) {
 func BenchmarkRandInt64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		RandInt64(10)
+	}
+}
+
+func BenchmarkRandSymbol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		RandSymbol(10)
 	}
 }
