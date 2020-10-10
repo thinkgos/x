@@ -7,28 +7,31 @@ import (
 )
 
 func TestBCrypt(t *testing.T) {
+	salt := "salt"
 	org := "hahaha"
-	cpt := NewBCrypt("")
+	cpt := new(BCrypt)
 
-	dst, err := cpt.Hash(org)
+	dst, err := cpt.Hash(org, salt)
 	require.Nil(t, err)
-	require.Nil(t, cpt.Compare(org, dst))
+	require.Nil(t, cpt.Compare(org, salt, dst))
 }
 
 func BenchmarkBCrypt_Hash(b *testing.B) {
-	cpt := NewBCrypt("111")
+	salt := "salt"
+	cpt := new(BCrypt)
 
 	for i := 0; i < b.N; i++ {
-		_, _ = cpt.Hash("hahaha")
+		_, _ = cpt.Hash("hahaha", salt)
 	}
 }
 
 func BenchmarkBCrypt_Compare(b *testing.B) {
+	salt := "salt"
 	org := "hahaha"
-	cpt := NewBCrypt("")
-	dst, _ := cpt.Hash(org)
+	cpt := new(BCrypt)
+	dst, _ := cpt.Hash(org, salt)
 
 	for i := 0; i < b.N; i++ {
-		_ = cpt.Compare(org, dst)
+		_ = cpt.Compare(org, salt, dst)
 	}
 }

@@ -23,21 +23,11 @@ import (
 var _ Verify = BCrypt{}
 
 // BCrypt bcrypt password encryption
-type BCrypt struct {
-	key string
-}
-
-// NewBCrypt new bcrypt password encryption with key,if key empty use defaultPrivateKey.
-func NewBCrypt(privateKey string) *BCrypt {
-	if privateKey == "" {
-		privateKey = defaultPrivateKey
-	}
-	return &BCrypt{privateKey}
-}
+type BCrypt struct{}
 
 // Hash password hash encryption
-func (sf BCrypt) Hash(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(sf.key+password), bcrypt.DefaultCost)
+func (sf BCrypt) Hash(password, salt string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(salt+password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
@@ -46,6 +36,6 @@ func (sf BCrypt) Hash(password string) (string, error) {
 }
 
 // Compare password hash verification
-func (sf BCrypt) Compare(password, hash string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(sf.key+password))
+func (sf BCrypt) Compare(password, salt, hash string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(salt+password))
 }

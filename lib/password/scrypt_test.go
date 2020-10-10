@@ -6,11 +6,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSimple(t *testing.T) {
+func TestSCrypt(t *testing.T) {
 	t.Run("correct", func(t *testing.T) {
 		salt := "salt"
 		org := "hahaha"
-		cpt := new(Simple)
+		cpt := new(SCrypt)
 
 		dst, err := cpt.Hash(org, salt)
 		require.Nil(t, err)
@@ -28,19 +28,19 @@ func TestSimple(t *testing.T) {
 	})
 }
 
-func BenchmarkSimple_Hash(b *testing.B) {
+func BenchmarkSCrypt_Hash(b *testing.B) {
 	salt := "salt"
-	cpt := new(Simple)
+	cpt := new(SCrypt)
 
 	for i := 0; i < b.N; i++ {
 		_, _ = cpt.Hash("hahaha", salt)
 	}
 }
 
-func BenchmarkSimple_Compare(b *testing.B) {
+func BenchmarkSCrypt_Compare(b *testing.B) {
 	salt := "salt"
 	org := "hahaha"
-	cpt := new(Simple)
+	cpt := new(SCrypt)
 	dst, _ := cpt.Hash(org, salt)
 
 	for i := 0; i < b.N; i++ {

@@ -33,7 +33,7 @@ const (
 	letterIntIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as letterIntIdxBits
 	letterIntIdxMax  = 63 / letterStrIdxBits   // # of letter indices fitting in 63 bits
 
-	letterSymbol        = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+,.?/:;{}[]`~"
+	letterSymbol        = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`"
 	letterSymbolIdxBits = 7                          // 7 bits to represent a letter index
 	letterSymbolIdxMask = 1<<letterSymbolIdxBits - 1 // All 1-bits, as many as letterStrIdxBits
 	letterSymbolIdxMax  = 63 / letterSymbolIdxBits   // # of letter indices fitting in 63 bits

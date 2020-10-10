@@ -15,33 +15,26 @@
 package password
 
 import (
-	"crypto/md5"
 	"encoding/hex"
-	"io"
+
+	"golang.org/x/crypto/scrypt"
 )
 
-var _ Verify = Simple{}
+var _ Verify = SCrypt{}
 
-// Simple simple password encryption
-type Simple struct{}
+type SCrypt struct{}
 
-// Hash password hash encryption 加盐法 md5Pwd+`@#$%`+md5Pwd+`^&*()`拼接
-func (sf Simple) Hash(password, salt string) (string, error) {
-	h := md5.New()
-	_, _ = io.WriteString(h, password+salt)
-
-	md5Pwd := hex.EncodeToString(h.Sum(nil))
-	// 加盐值加密
-	_, _ = io.WriteString(h, salt)
-	_, _ = io.WriteString(h, password)
-	_, _ = io.WriteString(h, `@#$%`+salt)
-	_, _ = io.WriteString(h, md5Pwd)
-	_, _ = io.WriteString(h, `^&*()`+salt)
-	return hex.EncodeToString(h.Sum(nil)), nil
+// Hash password hash encryption
+func (sf SCrypt) Hash(password, salt string) (string, error) {
+	rb, err := scrypt.Key([]byte(password), []byte(salt), 16384, 8, 1, 32)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(rb), nil
 }
 
 // Compare password hash verification
-func (sf Simple) Compare(password, salt, hash string) error {
+func (sf SCrypt) Compare(password, salt, hash string) error {
 	h, err := sf.Hash(password, salt)
 	if err != nil {
 		return err
