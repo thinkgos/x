@@ -42,3 +42,33 @@ func BenchmarkPow(b *testing.B) {
 		Pow(x, y)
 	}
 }
+
+func TestRound(t *testing.T) {
+	type args struct {
+		f float64
+		n int
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+		{
+			"四舍",
+			args{100.004, 2},
+			100.00,
+		},
+		{
+			"五入",
+			args{100.005, 2},
+			100.01,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Round(tt.args.f, tt.args.n); got != tt.want {
+				t.Errorf("Round() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

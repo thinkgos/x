@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 // FileModTime returns file modified time and possible error.
@@ -114,4 +115,20 @@ func IsExist(paths string) bool {
 func HasPermission(name string) bool {
 	_, err := os.Stat(name)
 	return !os.IsPermission(err)
+}
+
+// Filepaths returns all root dir (contain sub dir) file full path
+func Filepaths(root string) ([]string, error) {
+	var result = make([]string, 0)
+
+	err := filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !f.IsDir() {
+			result = append(result, path)
+		}
+		return nil
+	})
+	return result, err
 }
