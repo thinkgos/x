@@ -1,4 +1,4 @@
-// Package imgext return array of all Image Extensions
+// Package extimg extend image
 package extimg
 
 import (
@@ -22,6 +22,7 @@ var ext = []string{
 	"sgi", "rgb", "rgba", "bw", "int", "inta", "sid", "ras", "sun", "tga",
 }
 
+// GetExts get image ext slice
 func GetExts() []string {
 	return ext
 }
