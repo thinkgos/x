@@ -22,6 +22,7 @@ import (
 
 var _ Verify = SCrypt{}
 
+// SCrypt scrypt password encryption
 type SCrypt struct{}
 
 // Hash password hash encryption

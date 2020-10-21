@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestBlack(t *testing.T) {
+func TestBlack(_ *testing.T) {
 	fmt.Println(Black("Black"))
 	fmt.Println(Red("Red"))
 	fmt.Println(Green("Green"))
