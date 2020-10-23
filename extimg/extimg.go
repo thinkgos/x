@@ -2,6 +2,7 @@
 package extimg
 
 import (
+	"encoding/base64"
 	"errors"
 	"net/http"
 	"os"
@@ -28,8 +29,8 @@ func GetExts() []string {
 }
 
 // GetType returns the type of image (like image/jpeg)
-func GetType(name string) (string, error) {
-	file, err := os.Open(name)
+func GetType(filename string) (string, error) {
+	file, err := os.Open(filename)
 	if err != nil {
 		return "", err
 	}
@@ -49,4 +50,38 @@ func GetType(name string) (string, error) {
 	}
 
 	return "", errors.New("invalid image type")
+}
+
+// EncodeToBase64 image encode to base64,
+// format like: data:image/png;base64,xxxxxxxxxxxxxx
+// ext: png,jpg... or image/png,image/jpg
+// value: image raw value
+func EncodeToBase64(ext string, value []byte) string {
+	n := 5 + 8 + len(ext) + base64.StdEncoding.EncodedLen(len(value))
+	has := strings.HasPrefix(ext, "image/")
+	if !has {
+		n += 6
+	}
+	builder := strings.Builder{}
+	builder.Grow(n)
+	builder.WriteString("data:")
+	if !has {
+		builder.WriteString("image/")
+	}
+	builder.WriteString(ext)
+	builder.WriteString(";base64,")
+	builder.WriteString(base64.StdEncoding.EncodeToString(value))
+	return builder.String()
+}
+
+// DecodeBase64 decode base64 image which format is like: data:image/png;base64,xxxxxxxxxxxxxx
+func DecodeBase64(img string) (string, []byte, error) {
+	ss := strings.Split(img, ",")
+	if len(ss) != 2 {
+		return "", nil, errors.New("invalid base64 image")
+	}
+
+	tp := strings.TrimSuffix(strings.TrimPrefix(ss[0], "data:"), ";base64")
+	bv, err := base64.StdEncoding.DecodeString(ss[1])
+	return tp, bv, err
 }
