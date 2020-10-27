@@ -18,7 +18,6 @@ package extbase64
 import (
 	"encoding/base64"
 
-	"github.com/thinkgos/go-core-package/extimg"
 	"github.com/thinkgos/go-core-package/internal/bytesconv"
 )
 
@@ -43,12 +42,4 @@ func Decode(str string) ([]byte, error) {
 func DecodeString(str string) (string, error) {
 	b, err := base64.StdEncoding.DecodeString(str)
 	return bytesconv.Bytes2Str(b), err
-}
-
-// Image image base64
-// ext: png,jpg...
-// value: image raw value
-// Deprecated: use extimg.EncodeToBase64 instead
-func Image(ext string, value []byte) string {
-	return extimg.EncodeToBase64(ext, value)
 }

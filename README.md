@@ -13,6 +13,7 @@
 ## Feature 
 - [extbase64](#extbase64) base64封装
 - [extcert](#extcert) 简易cert封装
+- [extimg](#extimg) 常用图片封装
 - [extio](#extio) 常用io
 - [extmath](#extmath) 数学常用
 - [extnet](extnet) 常用net方法和自定义net.conn
@@ -31,6 +32,7 @@
     - [password](#password) 密码加密和检查
     - [regex](#regex) 常用正则
     - [ternary](#ternary) 常用三目运算
+    - [textcolor](#textcolor) 字符串文字简易加色
 
 ## Reference package
 
@@ -47,12 +49,12 @@
 - [archiver](https://github.com/mholt/archiver) Easily create & extract archives, and compress & decompress files of various formats
 - [inflection](https://github.com/jinzhu/inflection) Pluralizes and singularizes English nouns
 - [compress](https://github.com/klauspost/compress) Optimized compression packages
-
+- [strcase](https://github.com/iancoleman/strcase) A golang package for converting to snake_case or CamelCase
 ## Reference web
 - [render](https://github.com/thinkgos/render)  render extract from gin,but with optional build tags,useful for net/http or embedded systems,reduce program size
 - [binding](https://github.com/thinkgos/binding)  binding extract from gin,but with optional build tags,useful for net/http or embedded linux systems,reduce program size
 - [gin-middlewares](https://github.com/thinkgos/gin-middlewares) middleware for Gin
 - [http-middlewares](https://github.com/thinkgos/http-middlewares)  middleware for net/http
-
+- [user_agent](https://github.com/mssola/user_agent) HTTP User Agent parser for the Go programming language.
 ## other 
 - [ants](https://github.com/panjf2000/ants) ants is a high-performance and low-cost goroutine pool in Go

@@ -78,7 +78,7 @@ func EncodeToBase64(ext string, value []byte) string {
 func DecodeBase64(img string) (string, []byte, error) {
 	ss := strings.Split(img, ",")
 	if len(ss) != 2 {
-		return "", nil, errors.New("invalid base64 image")
+		return "", nil, errors.New("invalid base64 image data")
 	}
 
 	tp := strings.TrimSuffix(strings.TrimPrefix(ss[0], "data:"), ";base64")

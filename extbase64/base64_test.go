@@ -1,7 +1,6 @@
 package extbase64
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -21,9 +20,4 @@ func TestBase64(t *testing.T) {
 	raw, err := DecodeString(bs64)
 	require.NoError(t, err)
 	require.Equal(t, orig, raw)
-}
-
-func TestImage(t *testing.T) {
-	str := Image("png", []byte("helloworld"))
-	require.True(t, strings.HasPrefix(str, "data:image/png;base64,"))
 }
