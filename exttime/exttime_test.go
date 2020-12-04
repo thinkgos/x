@@ -6,7 +6,7 @@ import (
 )
 
 func TestServiceTime(t *testing.T) {
-	time.Sleep(time.Second * 5)
+	SSleep(5)
 	ts := ServiceStartupTime()
 	t.Log(Millisecond(ts))
 	t.Log(Microsecond(ts))
@@ -14,4 +14,5 @@ func TestServiceTime(t *testing.T) {
 	t.Log(ServiceStartupTime())
 	t.Log(ServiceElapseTime())
 	t.Log(ServiceUptime())
+	USleep(10)
 }

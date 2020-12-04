@@ -19,6 +19,16 @@ func Time(msec int64) time.Time {
 	return time.Unix(msec/1000, (msec%1000)*int64(time.Millisecond))
 }
 
+func SSleep(t int64) {
+	time.Sleep(time.Duration(t) * time.Second)
+}
+
+// USleep pauses the current goroutine for at least the microsecond d.
+// A negative or zero duration causes Sleep to return immediately.
+func USleep(t int64) {
+	time.Sleep(time.Duration(t) * time.Microsecond)
+}
+
 // ServiceStartupTime 服务启动时间
 func ServiceStartupTime() time.Time {
 	return setupTime
