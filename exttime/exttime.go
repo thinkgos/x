@@ -203,3 +203,62 @@ func ParseLocation(value string) time.Time {
 	}
 	return Parse(value)
 }
+
+// StartOfDay 获取日期中当天的开始时间.
+func StartOfDay(t time.Time) time.Time {
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+}
+
+// EndOfDay 获取日期中当天的结束时间.
+func EndOfDay(t time.Time) time.Time {
+	return time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
+}
+
+// StartOfMonth 获取日期中当月的开始时间.
+func StartOfMonth(t time.Time) time.Time {
+	return time.Date(t.Year(), t.Month(), 1, 0, 0, 0, 0, t.Location())
+}
+
+// EndOfMonth 获取日期中当月的结束时间.
+func EndOfMonth(t time.Time) time.Time {
+	return StartOfMonth(t).AddDate(0, 1, 0).Add(-time.Nanosecond)
+}
+
+// StartOfYear 获取日期中当年的开始时间.
+func StartOfYear(t time.Time) time.Time {
+	return time.Date(t.Year(), 1, 1, 0, 0, 0, 0, t.Location())
+}
+
+// EndOfYear 获取日期中当年的结束时间.
+func EndOfYear(t time.Time) time.Time {
+	return StartOfYear(t).AddDate(1, 0, 0).Add(-time.Nanosecond)
+}
+
+// StartOfWeek 获取日期中当周的开始时间;
+// weekStartDay 周几作为周的第一天,本库默认周一.
+func StartOfWeek(date time.Time, weekStartDay ...time.Weekday) time.Time {
+	weekStart := time.Monday
+	if len(weekStartDay) > 0 {
+		weekStart = weekStartDay[0]
+	}
+
+	// 当前是周几
+	weekday := int(date.Weekday())
+	if weekStart != time.Sunday {
+		weekStartDayInt := int(weekStart)
+
+		if weekday < weekStartDayInt {
+			weekday += 7 - weekStartDayInt
+		} else {
+			weekday -= weekStartDayInt
+		}
+	}
+
+	return time.Date(date.Year(), date.Month(), date.Day()-weekday, 0, 0, 0, 0, date.Location())
+}
+
+// EndOfWeek 获取日期中当周的结束时间;
+// weekStartDay 周几作为周的第一天,本库默认周一.
+func EndOfWeek(date time.Time, weekStartDay ...time.Weekday) time.Time {
+	return StartOfWeek(date, weekStartDay...).AddDate(0, 0, 7).Add(-time.Nanosecond)
+}

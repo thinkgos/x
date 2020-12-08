@@ -226,3 +226,63 @@ func TestParseLocation(t *testing.T) {
 		})
 	}
 }
+
+var testDate = Parse("2020-03-10 23:04:35")
+
+func TestStartOfDay(t *testing.T) {
+	res := StartOfDay(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-10 00:00:00", str)
+}
+
+func TestEndOfDay(t *testing.T) {
+	res := EndOfDay(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-10 23:59:59", str)
+}
+
+func TestStartOfMonth(t *testing.T) {
+	res := StartOfMonth(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-01 00:00:00", str)
+}
+
+func TestEndOfMonth(t *testing.T) {
+	res := EndOfMonth(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-31 23:59:59", str)
+}
+
+func TestStartOfYear(t *testing.T) {
+	res := StartOfYear(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-01-01 00:00:00", str)
+}
+
+func TestEndOfYear(t *testing.T) {
+	res := EndOfYear(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-12-31 23:59:59", str)
+}
+
+func TestStartOfWeek(t *testing.T) {
+	res := StartOfWeek(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-09 00:00:00", str)
+
+	d := Parse("2020-03-08 23:04:35")
+	res = StartOfWeek(d, time.Tuesday)
+	str = Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-03 00:00:00", str)
+}
+
+func TestEndOfWeek(t *testing.T) {
+	res := EndOfWeek(testDate)
+	str := Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-15 23:59:59", str)
+
+	d := Parse("2020-03-08 23:04:35")
+	res = EndOfWeek(d, time.Tuesday)
+	str = Date(res, "Y-m-d H:i:s")
+	require.Equal(t, "2020-03-09 23:59:59", str)
+}
