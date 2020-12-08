@@ -1,7 +1,8 @@
-package exttime
+package extime
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 )
@@ -37,6 +38,14 @@ func MSleep(t int64) {
 // A negative or zero duration causes Sleep to return immediately.
 func USleep(t int64) {
 	time.Sleep(time.Duration(t) * time.Microsecond)
+}
+
+// Valid 检查是否正常的日期.
+func Valid(year, month, day int) bool {
+	return month >= 1 && month <= 12 &&
+		day >= 1 && day <= 31 &&
+		year >= 1 && year <= math.MaxInt32 &&
+		day <= MonthDays(year, time.Month(month))
 }
 
 // Days time.Duration转化为天数

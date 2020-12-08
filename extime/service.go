@@ -1,4 +1,4 @@
-package exttime
+package extime
 
 import "time"
 
@@ -9,7 +9,7 @@ func ServiceStartupTime() time.Time {
 	return setupTime
 }
 
-// ServiceElapseTime 服务启动了多少时间(nanosecond)
+// ServiceElapseTime 服务启动了多少时间
 func ServiceElapseTime() time.Duration {
 	return time.Since(setupTime)
 }

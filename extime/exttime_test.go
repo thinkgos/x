@@ -1,4 +1,4 @@
-package exttime
+package extime
 
 import (
 	"testing"
@@ -15,6 +15,72 @@ func TestTime(t *testing.T) {
 	Sleep(1)
 	USleep(10)
 	MSleep(10)
+}
+
+func TestValid(t *testing.T) {
+	type args struct {
+		year  int
+		month int
+		day   int
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"正常 ",
+			args{
+				2019,
+				7,
+				31,
+			},
+			true,
+		},
+		{
+			"2月day不正常 ",
+			args{
+				2019,
+				2,
+				31,
+			},
+			false,
+		},
+		{
+			"0月不正常 ",
+			args{
+				2019,
+				0,
+				31,
+			},
+			false,
+		},
+		{
+			"13月不正常 ",
+			args{
+				2019,
+				13,
+				31,
+			},
+			false,
+		},
+		{
+			"0年不正常 ",
+			args{
+				0,
+				1,
+				31,
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Valid(tt.args.year, tt.args.month, tt.args.day); got != tt.want {
+				t.Errorf("Valid() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestDays(t *testing.T) {

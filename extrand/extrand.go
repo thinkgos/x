@@ -23,6 +23,11 @@ import (
 )
 
 const (
+	alphaString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz"
+	alphaStrIdxBits = 6                      // 6 bits to represent a letter index
+	alphaStrIdxMask = 1<<alphaStrIdxBits - 1 // All 1-bits, as many as letterStrIdxBits
+	alphaStrIdxMax  = 63 / alphaStrIdxBits   // # of letter indices fitting in 63 bits
+
 	letterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789"
 	letterStrIdxBits = 6                       // 6 bits to represent a letter index
 	letterStrIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as letterStrIdxBits
@@ -41,7 +46,25 @@ const (
 
 var globalRand = rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63() + rand.Int63()))
 
-// RandString rand string with give length
+// RandAlpha rand alpha with give length(只包含字母)
+func RandAlpha(length int) string {
+	b := make([]byte, length)
+	// A rand.Int63() generates 63 random bits, enough for letterStrIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), alphaStrIdxMax; i < length; {
+		if remain == 0 {
+			cache, remain = globalRand.Int63(), alphaStrIdxMax
+		}
+		if idx := int(cache & alphaStrIdxMask); idx < len(alphaString) {
+			b[i] = alphaString[idx]
+			i++
+		}
+		cache >>= alphaStrIdxBits
+		remain--
+	}
+	return bytesconv.Bytes2Str(b)
+}
+
+// RandString rand string with give length(包含字母与数字)
 func RandString(length int) string {
 	b := make([]byte, length)
 	// A rand.Int63() generates 63 random bits, enough for letterStrIdxMax letters!
@@ -78,7 +101,7 @@ func RandInt64(length int) int64 {
 	return val
 }
 
-// RandSymbol rand symbol with give length
+// RandSymbol rand symbol with give length(包含字母数字和特殊符号)
 func RandSymbol(length int) string {
 	b := make([]byte, length)
 	// A rand.Int63() generates 63 random bits, enough for letterSymbolIdxMax letters!
