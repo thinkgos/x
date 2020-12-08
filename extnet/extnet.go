@@ -43,16 +43,26 @@ func IsIntranet(host string) bool {
 	}
 
 	for _, ip := range ips {
-		if ip4 := ip.To4(); ip4 != nil &&
-			(ip4[0] == 127 || // ipv4 loopback
-				ip4[0] == 10 || // A类
-				(ip4[0] == 172 && (ip4[1] >= 16) && (ip4[1] <= 31)) || // B类
-				(ip4[0] == 192 && ip4[1] == 168)) || // C类
-			ip.Equal(net.IPv6loopback) { // ipv6 loopback
+		if IsIntranetIP(ip) {
 			return true
 		}
 	}
 	return false
+}
+
+// IsIntranetIP is intranet network or not.
+// 局域网IP段:
+// 		A类: 10.0.0.0~10.255.255.255
+// 		B类: 172.16.0.0~172.31.255.255
+// 		C类: 192.168.0.0~192.168.255.255
+func IsIntranetIP(ip net.IP) bool {
+	ip4 := ip.To4()
+	return ip4 != nil &&
+		(ip4[0] == 127 || // ipv4 loopback
+			ip4[0] == 10 || // A类
+			(ip4[0] == 172 && (ip4[1] >= 16) && (ip4[1] <= 31)) || // B类
+			(ip4[0] == 192 && ip4[1] == 168)) || // C类
+		ip.Equal(net.IPv6loopback) // ipv6 loopback
 }
 
 // SplitHostPort splits a network address of the form "host:port",
