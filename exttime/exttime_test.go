@@ -17,6 +17,12 @@ func TestTime(t *testing.T) {
 	MSleep(10)
 }
 
+func TestDays(t *testing.T) {
+	from := time.Date(2011, time.January, 1, 0, 0, 0, 0, time.Local)
+	to := time.Date(2012, time.January, 4, 12, 1, 2, 100000, time.Local)
+	t.Log(Days(to.Sub(from)))
+}
+
 func TestYearDays(t *testing.T) {
 	require.Equal(t, 366, YearDays(2020))
 	require.Equal(t, 365, YearDays(2019))
@@ -87,16 +93,6 @@ func TestMonthDays2(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestBetween(t *testing.T) {
-	from := time.Date(2011, time.January, 1, 0, 0, 0, 0, time.Local)
-	to := time.Date(2012, time.January, 2, 12, 1, 2, 100000, time.Local)
-	t.Log(MillisecondsBetween(from, to))
-	t.Log(SecondsBetween(from, to))
-	t.Log(MinutesBetween(from, to))
-	t.Log(HoursBetween(from, to))
-	t.Log(DaysBetween(from, to))
 }
 
 func TestDate(t *testing.T) {

@@ -39,6 +39,13 @@ func USleep(t int64) {
 	time.Sleep(time.Duration(t) * time.Microsecond)
 }
 
+// Days time.Duration转化为天数
+func Days(d time.Duration) float64 {
+	day := d / (24 * time.Hour)
+	nsec := d % (24 * time.Hour)
+	return float64(day) + float64(nsec)/(24*60*60*1e9)
+}
+
 // IsLeap 是否闰年
 func IsLeapYear(year int) bool {
 	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
@@ -73,31 +80,6 @@ func MonthDays(year int, month time.Month) int {
 // MonthDays2 t 所在时间月份的总天数
 func MonthDays2(t time.Time) int {
 	return MonthDays(t.Year(), t.Month())
-}
-
-// MillisecondsBetween 获取两个日期的间隔毫秒数.
-func MillisecondsBetween(from, to time.Time) int64 {
-	return int64(to.Sub(from) / (time.Millisecond))
-}
-
-// SecondsBetween 获取两个日期的间隔秒数.
-func SecondsBetween(from, to time.Time) int64 {
-	return int64(to.Sub(from) / (time.Second))
-}
-
-// MinutesBetween 获取两个日期的间隔分钟数.
-func MinutesBetween(from, to time.Time) int64 {
-	return int64(to.Sub(from) / (time.Minute))
-}
-
-// HoursBetween 获取两个日期的间隔小时数.
-func HoursBetween(from, to time.Time) int64 {
-	return int64(to.Sub(from) / (time.Hour))
-}
-
-// DaysBetween 获取两个日期的间隔天数.
-func DaysBetween(from, to time.Time) int64 {
-	return int64(to.Sub(from) / (24 * time.Hour))
 }
 
 // Date Format pattern rules.
