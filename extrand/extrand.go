@@ -118,3 +118,40 @@ func RandSymbol(length int) string {
 	}
 	return bytesconv.Bytes2Str(b)
 }
+
+func Int(min, max int) int {
+	if min > max {
+		panic("invalid argument to Int")
+	}
+	if min == max {
+		return min
+	}
+	return globalRand.Intn(max-min) + min
+}
+
+func Int31(min, max int32) int32 {
+	if min > max {
+		panic("invalid argument to Int31")
+	}
+	if min == max {
+		return min
+	}
+	return globalRand.Int31n(max-min) + min
+}
+
+func Int63(min, max int64) int64 {
+	if min > max {
+		panic("invalid argument to Int63")
+	}
+	if min == max {
+		return min
+	}
+	return globalRand.Int63n(max-min) + min
+}
+
+func Float64(min, max float64) float64 {
+	if min > max {
+		panic("invalid argument to Float64")
+	}
+	return min + (max-min)*globalRand.Float64()
+}
