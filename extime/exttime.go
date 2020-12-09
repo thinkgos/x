@@ -55,7 +55,7 @@ func Days(d time.Duration) float64 {
 	return float64(day) + float64(nsec)/(24*60*60*1e9)
 }
 
-// IsLeap 是否闰年
+// IsLeapYear 是否闰年
 func IsLeapYear(year int) bool {
 	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
 }
@@ -145,6 +145,7 @@ func Now(layout string) string {
 	return Date(time.Now(), layout)
 }
 
+// Parse parse value
 func Parse(value string) time.Time {
 	if value == "" {
 		return time.Time{}
@@ -194,6 +195,7 @@ func Parse(value string) time.Time {
 	panic(err)
 }
 
+// ParseLocation parse location
 func ParseLocation(value string) time.Time {
 	if value == "" {
 		return time.Time{}

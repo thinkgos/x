@@ -119,6 +119,7 @@ func RandSymbol(length int) string {
 	return bytesconv.Bytes2Str(b)
 }
 
+// Int 随机min,max中的值
 func Int(min, max int) int {
 	if min > max {
 		panic("invalid argument to Int")
@@ -129,6 +130,7 @@ func Int(min, max int) int {
 	return globalRand.Intn(max-min) + min
 }
 
+// Int31 随机min,max中的值
 func Int31(min, max int32) int32 {
 	if min > max {
 		panic("invalid argument to Int31")
@@ -139,6 +141,7 @@ func Int31(min, max int32) int32 {
 	return globalRand.Int31n(max-min) + min
 }
 
+// Int63 随机min,max中的值
 func Int63(min, max int64) int64 {
 	if min > max {
 		panic("invalid argument to Int63")
@@ -149,6 +152,7 @@ func Int63(min, max int64) int64 {
 	return globalRand.Int63n(max-min) + min
 }
 
+// Float64 随机min,max中的值
 func Float64(min, max float64) float64 {
 	if min > max {
 		panic("invalid argument to Float64")
