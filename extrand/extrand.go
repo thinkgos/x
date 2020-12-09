@@ -23,51 +23,33 @@ import (
 )
 
 const (
-	alphaString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz"
-	alphaStrIdxBits = 6                      // 6 bits to represent a letter index
-	alphaStrIdxMask = 1<<alphaStrIdxBits - 1 // All 1-bits, as many as letterStrIdxBits
-	alphaStrIdxMax  = 63 / alphaStrIdxBits   // # of letter indices fitting in 63 bits
-
-	letterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789"
+	letterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz"
 	letterStrIdxBits = 6                       // 6 bits to represent a letter index
-	letterStrIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as letterStrIdxBits
+	letterStrIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as strDigitalStrIdxBits
 	letterStrIdxMax  = 63 / letterStrIdxBits   // # of letter indices fitting in 63 bits
 
-	letterInt        = "0123456789"
-	letterIntIdxBits = 4                       // 4 bits to represent a letter index
-	letterIntIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as letterIntIdxBits
-	letterIntIdxMax  = 63 / letterStrIdxBits   // # of letter indices fitting in 63 bits
+	strDigitalString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789"
+	strDigitalStrIdxBits = 6                           // 6 bits to represent a letter index
+	strDigitalStrIdxMask = 1<<strDigitalStrIdxBits - 1 // All 1-bits, as many as strDigitalStrIdxBits
+	strDigitalStrIdxMax  = 63 / strDigitalStrIdxBits   // # of letter indices fitting in 63 bits
 
-	letterSymbol        = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`"
-	letterSymbolIdxBits = 7                          // 7 bits to represent a letter index
-	letterSymbolIdxMask = 1<<letterSymbolIdxBits - 1 // All 1-bits, as many as letterStrIdxBits
-	letterSymbolIdxMax  = 63 / letterSymbolIdxBits   // # of letter indices fitting in 63 bits
+	digitalString     = "0123456789"
+	digitalStrIdxBits = 4                           // 4 bits to represent a letter index
+	digitalStrIdxMask = 1<<strDigitalStrIdxBits - 1 // All 1-bits, as many as digitalStrIdxBits
+	digitalStrIdxMax  = 63 / strDigitalStrIdxBits   // # of letter indices fitting in 63 bits
+
+	symbolString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`"
+	symbolStrIdxBits = 7                       // 7 bits to represent a letter index
+	symbolStrIdxMask = 1<<symbolStrIdxBits - 1 // All 1-bits, as many as strDigitalStrIdxBits
+	symbolStrIdxMax  = 63 / symbolStrIdxBits   // # of letter indices fitting in 63 bits
 )
 
 var globalRand = rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63() + rand.Int63()))
 
-// RandAlpha rand alpha with give length(只包含字母)
-func RandAlpha(length int) string {
+// RandLetter rand alpha with give length(只包含字母)
+func RandLetter(length int) string {
 	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for letterStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), alphaStrIdxMax; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), alphaStrIdxMax
-		}
-		if idx := int(cache & alphaStrIdxMask); idx < len(alphaString) {
-			b[i] = alphaString[idx]
-			i++
-		}
-		cache >>= alphaStrIdxBits
-		remain--
-	}
-	return bytesconv.Bytes2Str(b)
-}
-
-// RandString rand string with give length(包含字母与数字)
-func RandString(length int) string {
-	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for letterStrIdxMax letters!
+	// A rand.Int63() generates 63 random bits, enough for strDigitalStrIdxMax letters!
 	for i, cache, remain := 0, globalRand.Int63(), letterStrIdxMax; i < length; {
 		if remain == 0 {
 			cache, remain = globalRand.Int63(), letterStrIdxMax
@@ -82,20 +64,38 @@ func RandString(length int) string {
 	return bytesconv.Bytes2Str(b)
 }
 
+// RandString rand string with give length(包含字母与数字)
+func RandString(length int) string {
+	b := make([]byte, length)
+	// A rand.Int63() generates 63 random bits, enough for strDigitalStrIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), strDigitalStrIdxMax; i < length; {
+		if remain == 0 {
+			cache, remain = globalRand.Int63(), strDigitalStrIdxMax
+		}
+		if idx := int(cache & strDigitalStrIdxMask); idx < len(strDigitalString) {
+			b[i] = strDigitalString[idx]
+			i++
+		}
+		cache >>= strDigitalStrIdxBits
+		remain--
+	}
+	return bytesconv.Bytes2Str(b)
+}
+
 // RandInt64 rand int64 with give length
 func RandInt64(length int) int64 {
 	var val int64
 
-	// A rand.Int63() generates 63 random bits, enough for letterIntIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), letterIntIdxMax; i < length; {
+	// A rand.Int63() generates 63 random bits, enough for digitalStrIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), digitalStrIdxMax; i < length; {
 		if remain == 0 {
-			cache, remain = globalRand.Int63(), letterIntIdxMax
+			cache, remain = globalRand.Int63(), digitalStrIdxMax
 		}
-		if idx := int(cache & letterIntIdxMask); idx < len(letterInt) && !(i == 0 && letterInt[idx] == '0') {
-			val = val*10 + int64(letterInt[idx]-'0')
+		if idx := int(cache & digitalStrIdxMask); idx < len(digitalString) && !(i == 0 && digitalString[idx] == '0') {
+			val = val*10 + int64(digitalString[idx]-'0')
 			i++
 		}
-		cache >>= letterIntIdxBits
+		cache >>= digitalStrIdxBits
 		remain--
 	}
 	return val
@@ -104,16 +104,16 @@ func RandInt64(length int) int64 {
 // RandSymbol rand symbol with give length(包含字母数字和特殊符号)
 func RandSymbol(length int) string {
 	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for letterSymbolIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), letterSymbolIdxMax; i < length; {
+	// A rand.Int63() generates 63 random bits, enough for symbolStrIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), symbolStrIdxMax; i < length; {
 		if remain == 0 {
-			cache, remain = globalRand.Int63(), letterSymbolIdxMax
+			cache, remain = globalRand.Int63(), symbolStrIdxMax
 		}
-		if idx := int(cache & letterSymbolIdxMask); idx < len(letterSymbol) {
-			b[i] = letterSymbol[idx]
+		if idx := int(cache & symbolStrIdxMask); idx < len(symbolString) {
+			b[i] = symbolString[idx]
 			i++
 		}
-		cache >>= letterSymbolIdxBits
+		cache >>= symbolStrIdxBits
 		remain--
 	}
 	return bytesconv.Bytes2Str(b)
