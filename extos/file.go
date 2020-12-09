@@ -146,14 +146,16 @@ func Filepaths(root string) ([]string, error) {
 	return result, err
 }
 
-// IsExecutable 是否可执行文件.
-func IsExecutable(name string) bool {
-	info, err := os.Stat(name)
-	return err == nil && info.Mode().IsRegular() && (info.Mode()&0111) != 0
-}
-
-// IsLink 是否链接文件(且存在).
-func IsLink(name string) bool {
-	f, err := os.Lstat(name)
-	return err == nil && f.Mode()&os.ModeSymlink == os.ModeSymlink
-}
+// // IsExecutable 是否可执行文件.
+// TODO: bug on wondows
+// func IsExecutable(name string) bool {
+// 	info, err := os.Stat(name)
+// 	return err == nil && info.Mode().IsRegular() && (info.Mode()&0111) != 0
+// }
+//
+// // IsLink 是否链接文件(且存在).
+// TODO: bug on wondows
+// func IsLink(name string) bool {
+// 	f, err := os.Lstat(name)
+// 	return err == nil && f.Mode()&os.ModeSymlink == os.ModeSymlink
+// }
