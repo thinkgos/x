@@ -22,6 +22,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"syscall"
 )
 
 // FileModTime returns file modified time and possible error.
@@ -40,6 +41,42 @@ func FileSize(file string) (int64, error) {
 		return 0, err
 	}
 	return f.Size(), nil
+}
+
+// IsDir returns true if given path is a dir,
+// or returns false when it's a file or does not exist.
+func IsDir(filePath string) bool {
+	f, err := os.Stat(filePath)
+	return err == nil && f.IsDir()
+}
+
+// IsFile returns true if given path is a file,
+// or returns false when it's a directory or does not exist.
+func IsFile(filePath string) bool {
+	f, err := os.Stat(filePath)
+	return err == nil && !f.IsDir()
+}
+
+// FileMode returns file mode and possible error.
+func FileMode(name string) (os.FileMode, error) {
+	fInfo, err := os.Lstat(name)
+	if err != nil {
+		return 0, err
+	}
+	return fInfo.Mode(), nil
+}
+
+// IsExist checks whether a file or directory exists.
+// It returns false when the file or directory does not exist.
+func IsExist(paths string) bool {
+	_, err := os.Stat(paths)
+	return err == nil || os.IsExist(err)
+}
+
+// HasPermission returns a boolean indicating whether that permission is allowed.
+func HasPermission(name string) bool {
+	_, err := os.Stat(name)
+	return !os.IsPermission(err)
 }
 
 // FileCopy copies file from source to target path.
@@ -94,29 +131,6 @@ func WriteFile(filename string, data []byte) error {
 	return ioutil.WriteFile(filename, data, 0655)
 }
 
-// IsFile returns true if given path is a file,
-// or returns false when it's a directory or does not exist.
-func IsFile(filePath string) bool {
-	f, e := os.Stat(filePath)
-	if e != nil {
-		return false
-	}
-	return !f.IsDir()
-}
-
-// IsExist checks whether a file or directory exists.
-// It returns false when the file or directory does not exist.
-func IsExist(paths string) bool {
-	_, err := os.Stat(paths)
-	return err == nil || os.IsExist(err)
-}
-
-// HasPermission returns a boolean indicating whether that permission is allowed.
-func HasPermission(name string) bool {
-	_, err := os.Stat(name)
-	return !os.IsPermission(err)
-}
-
 // Filepaths returns all root dir (contain sub dir) file full path
 func Filepaths(root string) ([]string, error) {
 	var result = make([]string, 0)
@@ -131,4 +145,26 @@ func Filepaths(root string) ([]string, error) {
 		return nil
 	})
 	return result, err
+}
+
+// IsWritable 是否可写.
+func IsWritable(name string) bool {
+	return syscall.Access(name, syscall.O_RDWR) == nil
+}
+
+// IsReadable 是否可读.
+func IsReadable(name string) bool {
+	return syscall.Access(name, syscall.O_RDONLY) == nil
+}
+
+// IsExecutable 是否可执行文件.
+func IsExecutable(name string) bool {
+	info, err := os.Stat(name)
+	return err == nil && info.Mode().IsRegular() && (info.Mode()&0111) != 0
+}
+
+// IsLink 是否链接文件(且存在).
+func IsLink(name string) bool {
+	f, err := os.Lstat(name)
+	return err == nil && f.Mode()&os.ModeSymlink == os.ModeSymlink
 }

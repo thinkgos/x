@@ -17,6 +17,8 @@ package extos
 
 import (
 	"os"
+	"os/exec"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,10 +43,21 @@ func TestFileSize(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestIsDir(t *testing.T) {
+	assert.False(t, IsDir("file.go"))
+	assert.True(t, IsDir("testdata"))
+	assert.False(t, IsDir("files.go"))
+}
+
 func TestIsFile(t *testing.T) {
 	assert.True(t, IsFile("file.go"))
 	assert.False(t, IsFile("testdata"))
 	assert.False(t, IsFile("files.go"))
+}
+
+func TestFileMode(t *testing.T) {
+	t.Log(FileMode("file.go"))
+	t.Log(FileMode("files.go"))
 }
 
 func TestIsExist(t *testing.T) {
@@ -59,6 +72,10 @@ func TestIsExist(t *testing.T) {
 	t.Run("Pass a directory name that does not exist", func(t *testing.T) {
 		assert.False(t, IsExist(".hg"))
 	})
+}
+
+func TestHasPermission(t *testing.T) {
+	assert.True(t, HasPermission("file.go"))
 }
 
 func TestFileCopy(t *testing.T) {
@@ -79,10 +96,6 @@ func TestWriteFile(t *testing.T) {
 	os.RemoveAll("testdata/x")
 }
 
-func TestHasPermission(t *testing.T) {
-	assert.True(t, HasPermission("file.go"))
-}
-
 func BenchmarkIsFile(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		IsFile("file.go")
@@ -93,4 +106,30 @@ func BenchmarkIsExist(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		IsExist("file.go")
 	}
+}
+
+func TestIsWritable(t *testing.T) {
+	assert.True(t, IsWritable("file.go"))
+	assert.False(t, IsWritable("files.go"))
+}
+
+func TestIsReadable(t *testing.T) {
+	assert.True(t, IsReadable("file.go"))
+	assert.False(t, IsReadable("files.go"))
+}
+
+func TestIsExecutable(t *testing.T) {
+	assert.False(t, IsExecutable("file.go"))
+	assert.False(t, IsExecutable("files.go"))
+	assert.True(t, IsExecutable(filepath.Join(os.Getenv("GOROOT"), "bin", "go")))
+}
+
+func TestIsLink(t *testing.T) {
+	filename := "./testdata/a-lnk"
+	exec.Command("/bin/bash", "-c", "ln -sf ./testdata/a.go ./testdata/a-lnk").Run() // nolint: errcheck
+
+	assert.True(t, IsLink(filename))
+	assert.False(t, IsLink("file.go"))
+
+	os.Remove(filename)
 }

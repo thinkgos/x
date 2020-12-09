@@ -16,6 +16,7 @@
 package extos
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -27,4 +28,19 @@ func IsMachineLittleEndian() bool {
 	b := *((*byte)(u))
 
 	return b == 0x01
+}
+
+// IsWindows 当前操作系统是否Windows.
+func IsWindows() bool {
+	return runtime.GOOS == "windows"
+}
+
+// IsLinux 当前操作系统是否Linux.
+func IsLinux() bool {
+	return runtime.GOOS == "linux"
+}
+
+// IsMac 当前操作系统是否Mac OS/X.
+func IsMac() bool {
+	return runtime.GOOS == "darwin"
 }

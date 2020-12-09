@@ -11,3 +11,9 @@ func TestIsMachineLittleEndian(t *testing.T) {
 		}
 	})
 }
+
+func TestCover(t *testing.T) {
+	t.Log(IsWindows())
+	t.Log(IsLinux())
+	t.Log(IsMac())
+}

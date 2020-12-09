@@ -49,6 +49,7 @@ func HasChinese(str string) bool {
 	return false
 }
 
+// HasSpecialChar 标点字符,符号字符, mark 字符
 func HasSpecialChar(str string) bool {
 	for _, r := range str {
 		// IsPunct 判断 r 是否为一个标点字符 (类别 P)

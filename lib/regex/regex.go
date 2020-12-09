@@ -48,6 +48,7 @@ const (
 	patternWhitespaceHas = ".*[[:space:]]"
 )
 
+// 全局预编译regex
 var (
 	RegexEmail         = regexp.MustCompile(patternEmail)
 	RegexStrictEmail   = regexp.MustCompile(patternStrictEmail)
@@ -123,6 +124,7 @@ func IsWhitespaces(str string) bool {
 	return str != "" && RegexWhitespaceAll.MatchString(str)
 }
 
+// HasWhitespace 是否含有空白字符
 func HasWhitespace(str string) bool {
 	return str != "" && RegexWhitespaceHas.MatchString(str)
 }
