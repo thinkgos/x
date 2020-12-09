@@ -108,16 +108,6 @@ func BenchmarkIsExist(b *testing.B) {
 	}
 }
 
-func TestIsWritable(t *testing.T) {
-	assert.True(t, IsWritable("file.go"))
-	assert.False(t, IsWritable("files.go"))
-}
-
-func TestIsReadable(t *testing.T) {
-	assert.True(t, IsReadable("file.go"))
-	assert.False(t, IsReadable("files.go"))
-}
-
 func TestIsExecutable(t *testing.T) {
 	assert.False(t, IsExecutable("file.go"))
 	assert.False(t, IsExecutable("files.go"))

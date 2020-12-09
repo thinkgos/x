@@ -22,7 +22,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"syscall"
 )
 
 // FileModTime returns file modified time and possible error.
@@ -145,16 +144,6 @@ func Filepaths(root string) ([]string, error) {
 		return nil
 	})
 	return result, err
-}
-
-// IsWritable 是否可写.
-func IsWritable(name string) bool {
-	return syscall.Access(name, syscall.O_RDWR) == nil
-}
-
-// IsReadable 是否可读.
-func IsReadable(name string) bool {
-	return syscall.Access(name, syscall.O_RDONLY) == nil
 }
 
 // IsExecutable 是否可执行文件.
