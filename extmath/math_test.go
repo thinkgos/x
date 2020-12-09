@@ -1,8 +1,11 @@
 package extmath
 
 import (
+	"math"
 	"math/rand"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestPow(t *testing.T) {
@@ -71,4 +74,49 @@ func TestRound(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAbs(t *testing.T) {
+	tests := []struct {
+		name   string
+		number int64
+		want   int64
+	}{
+		{
+			"正数",
+			100,
+			100,
+		},
+		{
+			"负数",
+			-100,
+			100,
+		},
+		{
+			"负极数",
+			math.MinInt64 + 1,
+			math.MaxInt64,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Abs(tt.number); got != tt.want {
+				t.Errorf("Abs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRange(t *testing.T) {
+	var start, end = 1, 5
+	res0 := Range(start, end)
+	require.True(t, len(res0) == 5 && res0[0] == start && res0[len(res0)-1] == end)
+
+	start, end = 5, 1
+	res1 := Range(start, end)
+	require.True(t, len(res1) == 5 && res1[0] == start && res1[len(res0)-1] == end)
+
+	start, end = 3, 3
+	res2 := Range(start, end)
+	require.True(t, len(res2) == 1)
 }
