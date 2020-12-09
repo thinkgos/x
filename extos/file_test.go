@@ -111,24 +111,28 @@ func BenchmarkIsExist(b *testing.B) {
 func TestIsExecutable(t *testing.T) {
 	assert.False(t, IsExecutable("file.go"))
 	assert.False(t, IsExecutable("files.go"))
-	goExecPath := filepath.Join(os.Getenv("GOROOT"), "bin")
 	if IsWindows() {
-		goExecPath = filepath.Join(goExecPath, "go.exe")
+		assert.True(t, IsExecutable(filepath.Join(os.Getenv("GOROOT"), "bin", "go.exe")))
 	} else {
-		goExecPath = filepath.Join(goExecPath, "go")
+		assert.True(t, IsExecutable(filepath.Join(os.Getenv("GOROOT"), "bin", "go")))
 	}
-	assert.True(t, IsExecutable(goExecPath))
 }
 
 func TestIsLink(t *testing.T) {
-	filename := "./testdata/a-lnk"
 	if IsWindows() {
 		exec.Command("cmd", "/C", "mklink /j .\\testdata\\a.go .\\testdata\\a-lnk").Run() // nolint: errcheck
+
+		filename := ".\\testdata\\a-lnk"
+		assert.True(t, IsLink(filename))
+		os.Remove(filename)
 	} else {
 		exec.Command("/bin/bash", "-c", "ln -sf ./testdata/a.go ./testdata/a-lnk").Run() // nolint: errcheck
+
+		filename := "./testdata/a-lnk"
+		assert.True(t, IsLink(filename))
+		os.Remove(filename)
 	}
-	assert.True(t, IsLink(filename))
+
 	assert.False(t, IsLink("file.go"))
 
-	os.Remove(filename)
 }
