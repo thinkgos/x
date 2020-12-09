@@ -76,3 +76,8 @@ func TestFloat64(t *testing.T) {
 	require.LessOrEqual(t, got, 20.1)
 	require.Equal(t, 10.1, Float64(10.1, 10.1))
 }
+
+func TestShuffle(t *testing.T) {
+	t.Log(Shuffle("hello world"))
+	t.Log(Shuffle("hello world"))
+}

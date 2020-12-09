@@ -68,3 +68,54 @@ func BenchmarkIsUrl(b *testing.B) {
 		IsEmail("http://example.com")
 	}
 }
+
+func TestIsRGBColor(t *testing.T) {
+	tests := []struct {
+		name string
+		s    string
+		want bool
+	}{
+		{"", "", false},
+		{"", "rgb(0,31,255)", true},
+		{"", "rgb(1,349,275)", false},
+		{"", "rgb(01,31,255)", false},
+		{"", "rgb(0.6,31,255)", false},
+		{"", "rgba(0,31,255)", false},
+		{"", "rgb(0,  31, 255)", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsRGBColor(tt.s); got != tt.want {
+				t.Errorf("IsRGBColor() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsHexColor(t *testing.T) {
+	tests := []struct {
+		name  string
+		s     string
+		want  string
+		want1 bool
+	}{
+		{"", "", "", false},
+		{"", "#ff", "#ff", false},
+		{"", "fff0", "fff0", false},
+		{"", "#ff12FG", "#ff12FG", false},
+		{"", "CCccCC", "#CCCCCC", true},
+		{"", "fff", "#FFF", true},
+		{"", "#f00", "#F00", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := IsHexColor(tt.s)
+			if got != tt.want {
+				t.Errorf("IsHexColor() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("IsHexColor() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}

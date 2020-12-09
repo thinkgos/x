@@ -159,3 +159,12 @@ func Float64(min, max float64) float64 {
 	}
 	return min + (max-min)*globalRand.Float64()
 }
+
+// Shuffle pseudo-randomizes the order of elements using the default Source.
+func Shuffle(str string) string {
+	runes := []rune(str)
+	globalRand.Shuffle(len(runes), func(i, j int) {
+		runes[i], runes[j] = runes[j], runes[i]
+	})
+	return string(runes)
+}
