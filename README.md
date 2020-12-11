@@ -13,6 +13,7 @@
 ## Feature 
 - [extbase64](#extbase64) base64封装
 - [extcert](#extcert) 简易cert封装
+- [extime](#extime) 常用time封装
 - [extimg](#extimg) 常用图片封装
 - [extio](#extio) 常用io
 - [extmath](#extmath) 数学常用
