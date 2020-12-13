@@ -145,7 +145,7 @@ func Now(layout string) string {
 	return Date(time.Now(), layout)
 }
 
-// Parse parse value
+// Parse parse value use PHP time format.
 func Parse(value string) time.Time {
 	if value == "" {
 		return time.Time{}
