@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// Join concatenates the elements of its first argument to create a single string. The separator
+// string sep is placed between elements in the resulting string.
 func Join(elems []int64, sep string) string {
 	switch len(elems) {
 	case 0:
@@ -30,6 +32,8 @@ func Join(elems []int64, sep string) string {
 	return b.String()
 }
 
+// Split Split slices s into all substrings separated by sep and returns a slice of
+// the int64 between those separators.
 func Split(s, sep string) []int64 {
 	if s == "" {
 		return []int64{}
