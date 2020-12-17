@@ -7,6 +7,9 @@ import (
 // KeysOfMap 获取m的map的key的切片,要求m为map且key为字符串.
 func KeysOfMap(m interface{}) []string {
 	rv := reflect.Indirect(reflect.ValueOf(m))
+	if rv.Kind() == reflect.Invalid {
+		return []string{}
+	}
 	if rv.Kind() != reflect.Map {
 		panic("KeysOfMap: require a map")
 	}
@@ -26,8 +29,11 @@ func KeysOfMap(m interface{}) []string {
 // KeysIntOfMap 获取m的map的key的切片,要求m为map且key为数值.
 func KeysIntOfMap(m interface{}) []int64 {
 	rv := reflect.Indirect(reflect.ValueOf(m))
+	if rv.Kind() == reflect.Invalid {
+		return []int64{}
+	}
 	if rv.Kind() != reflect.Map {
-		panic("KeysOfMap: require a map")
+		panic("KeysIntOfMap: require a map")
 	}
 
 	keys := rv.MapKeys()
@@ -38,7 +44,7 @@ func KeysIntOfMap(m interface{}) []int64 {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		default:
-			panic("KeysOfMap: require number type of map key")
+			panic("KeysIntOfMap: require integer type of map key")
 		}
 		ss = append(ss, key.Int())
 	}

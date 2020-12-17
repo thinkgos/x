@@ -11,7 +11,7 @@ import (
 func TestKeysOfMap(t *testing.T) {
 	require.Panics(t, func() { KeysOfMap("no map") })
 	require.Panics(t, func() { KeysOfMap(map[int]struct{}{1: {}}) })
-
+	require.Equal(t, []string{}, KeysOfMap(nil))
 	require.Equal(t, []string{}, KeysOfMap(map[int]struct{}{}))
 
 	want := []string{"1", "2", "3", "4"}
@@ -82,6 +82,7 @@ func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 func TestKeysIntOfMap(t *testing.T) {
 	require.Panics(t, func() { KeysIntOfMap("no map") })
 	require.Panics(t, func() { KeysIntOfMap(map[string]struct{}{"1": {}}) })
+	require.Equal(t, []int64{}, KeysIntOfMap(nil))
 	require.Equal(t, []int64{}, KeysIntOfMap(map[string]struct{}{}))
 
 	tests := []struct {
