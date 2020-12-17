@@ -9,32 +9,32 @@ import (
 )
 
 type StructInt8 struct {
-	Uid   int8
+	UID   int8
 	Value string
 }
 
 type StructUint16 struct {
-	Uid   uint16
+	UID   uint16
 	Value string
 }
 
 type StructFloat64 struct {
-	Uid   float64
+	UID   float64
 	Value string
 }
 
 type StructFloat32 struct {
-	Uid   float32
+	UID   float32
 	Value string
 }
 
 type StructString struct {
-	Uid   string
+	UID   string
 	Value string
 }
 
 type StructMuch struct {
-	Uid *string
+	UID *string
 	Err error
 }
 
@@ -52,7 +52,7 @@ func TestStructsIntSlice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int{1, 2},
 		},
@@ -60,7 +60,7 @@ func TestStructsIntSlice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int{1, 2},
 		},
@@ -68,7 +68,7 @@ func TestStructsIntSlice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int{1, 2},
 		},
@@ -76,7 +76,7 @@ func TestStructsIntSlice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int{1, 2},
 		},
@@ -84,7 +84,7 @@ func TestStructsIntSlice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int{1, 2},
 		},
@@ -92,7 +92,7 @@ func TestStructsIntSlice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int{1, 2},
 		},
@@ -120,7 +120,7 @@ func TestStructsUintSlice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint{1, 2},
 		},
@@ -128,7 +128,7 @@ func TestStructsUintSlice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint{1, 2},
 		},
@@ -136,7 +136,7 @@ func TestStructsUintSlice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint{1, 2},
 		},
@@ -144,7 +144,7 @@ func TestStructsUintSlice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint{1, 2},
 		},
@@ -152,7 +152,7 @@ func TestStructsUintSlice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint{1, 2},
 		},
@@ -160,7 +160,7 @@ func TestStructsUintSlice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint{1, 2},
 		},
@@ -188,7 +188,7 @@ func TestStructsInt64Slice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int64{1, 2},
 		},
@@ -196,7 +196,7 @@ func TestStructsInt64Slice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int64{1, 2},
 		},
@@ -204,7 +204,7 @@ func TestStructsInt64Slice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int64{1, 2},
 		},
@@ -212,7 +212,7 @@ func TestStructsInt64Slice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int64{1, 2},
 		},
@@ -220,7 +220,7 @@ func TestStructsInt64Slice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int64{1, 2},
 		},
@@ -228,7 +228,7 @@ func TestStructsInt64Slice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]int64{1, 2},
 		},
@@ -256,7 +256,7 @@ func TestStructsUint64Slice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint64{1, 2},
 		},
@@ -264,7 +264,7 @@ func TestStructsUint64Slice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint64{1, 2},
 		},
@@ -272,7 +272,7 @@ func TestStructsUint64Slice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint64{1, 2},
 		},
@@ -280,7 +280,7 @@ func TestStructsUint64Slice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint64{1, 2},
 		},
@@ -288,7 +288,7 @@ func TestStructsUint64Slice(t *testing.T) {
 			"no ptr",
 			args{
 				[]StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint64{1, 2},
 		},
@@ -296,7 +296,7 @@ func TestStructsUint64Slice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]uint64{1, 2},
 		},
@@ -324,7 +324,7 @@ func TestStructStringSlice(t *testing.T) {
 			"integer no ptr",
 			args{
 				[]StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1", "2"},
 		},
@@ -332,7 +332,7 @@ func TestStructStringSlice(t *testing.T) {
 			"integer ptr",
 			args{
 				[]*StructInt8{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1", "2"},
 		},
@@ -340,7 +340,7 @@ func TestStructStringSlice(t *testing.T) {
 			"integer no ptr",
 			args{
 				[]StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1", "2"},
 		},
@@ -348,7 +348,7 @@ func TestStructStringSlice(t *testing.T) {
 			"integer ptr",
 			args{
 				[]*StructUint16{{1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1", "2"},
 		},
@@ -356,7 +356,7 @@ func TestStructStringSlice(t *testing.T) {
 			"string no ptr",
 			args{
 				[]*StructString{{"1", "1"}, {"2", "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1", "2"},
 		},
@@ -364,7 +364,7 @@ func TestStructStringSlice(t *testing.T) {
 			"string ptr",
 			args{
 				[]*StructString{{"1", "1"}, {"2", "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1", "2"},
 		},
@@ -372,7 +372,7 @@ func TestStructStringSlice(t *testing.T) {
 			"Float32 no ptr",
 			args{
 				[]StructFloat32{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1.1", "2"},
 		},
@@ -380,7 +380,7 @@ func TestStructStringSlice(t *testing.T) {
 			"Float32 ptr",
 			args{
 				[]*StructFloat32{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1.1", "2"},
 		},
@@ -388,7 +388,7 @@ func TestStructStringSlice(t *testing.T) {
 			"Float64 no ptr",
 			args{
 				[]StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1.1", "2"},
 		},
@@ -396,7 +396,7 @@ func TestStructStringSlice(t *testing.T) {
 			"Float64 ptr",
 			args{
 				[]*StructFloat64{{1.1, "1"}, {2, "2"}},
-				"Uid",
+				"UID",
 			},
 			[]string{"1.1", "2"},
 		},
@@ -436,6 +436,6 @@ func TestSlice(t *testing.T) {
 
 	sli2 := New([]*StructMuch{nil})
 	require.Panics(t, func() {
-		sli2.StructStringSlice("Uid")
+		sli2.StructStringSlice("UID")
 	})
 }

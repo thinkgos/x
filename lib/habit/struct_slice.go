@@ -10,17 +10,17 @@ func StructsIntSlice(s interface{}, fieldName string) []int {
 	return New(s).StructIntSlice(fieldName)
 }
 
-// StructsIntSlice returns a slice of int. For more info refer to Slice types v() method.
+// StructsUintSlice returns a slice of int. For more info refer to Slice types v() method.
 func StructsUintSlice(s interface{}, fieldName string) []uint {
 	return New(s).StructUintSlice(fieldName)
 }
 
-// StructInt64Slice returns a slice of int64. For more info refer to Slice types StructInt64Slice() method.
+// StructsInt64Slice returns a slice of int64. For more info refer to Slice types StructInt64Slice() method.
 func StructsInt64Slice(s interface{}, fieldName string) []int64 {
 	return New(s).StructInt64Slice(fieldName)
 }
 
-// StructInt64Slice returns a slice of int64. For more info refer to Slice types StructUint64Slice() method.
+// StructsUint64Slice returns a slice of int64. For more info refer to Slice types StructUint64Slice() method.
 func StructsUint64Slice(s interface{}, fieldName string) []uint64 {
 	return New(s).StructUint64Slice(fieldName)
 }
@@ -58,7 +58,7 @@ func (sf *Slice) StructIntSlice(fieldName string) []int {
 	return slice
 }
 
-// StructIntSlice extracts the given s slice's every element, which is struct, to []uint by the field.
+// StructUintSlice extracts the given s slice's every element, which is struct, to []uint by the field.
 // It panics if the s's element is not struct, or field is not exits, or the value of field is not signed integer.
 func (sf *Slice) StructUintSlice(fieldName string) []uint {
 	length := sf.value.Len()
@@ -100,7 +100,7 @@ func (sf *Slice) StructUint64Slice(fieldName string) []uint64 {
 	return slice
 }
 
-// StructInt64Slice extracts the given s slice's every element, which is struct, to []string by the field.
+// StructStringSlice extracts the given s slice's every element, which is struct, to []string by the field.
 // It panics if the s's element is not struct, or field is not exits, or the value of field is not integer or string.
 func (sf *Slice) StructStringSlice(fieldName string) []string {
 	length := sf.value.Len()
@@ -108,7 +108,7 @@ func (sf *Slice) StructStringSlice(fieldName string) []string {
 
 	for i := 0; i < length; i++ {
 		v := sf.structFieldVal(i, fieldName)
-		switch v.Kind() {
+		switch v.Kind() { // nolint: exhaustive
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			slice[i] = strconv.FormatInt(v.Int(), 10)
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
@@ -161,7 +161,7 @@ func (sf *Slice) Name() string {
 }
 
 func valueInteger(v reflect.Value) uint64 {
-	switch v.Kind() {
+	switch v.Kind() { // nolint: exhaustive
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return uint64(v.Int())
 	case reflect.Float32, reflect.Float64:

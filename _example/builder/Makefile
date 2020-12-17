@@ -13,7 +13,7 @@ firmwareName = ${name}
 execveFile := ${firmwareName}
 
 # 编译flags
-path=github.com/thinkgos/go-core-package/lib/builder
+path=github.com/thinkgos/go-core-package/builder
 # TIPS: 如果值内容中含有空格，可以用单引号！
 flags = -ldflags "-X '${path}.BuildTime=`date "+%F %T %z"`' \
 	-X '${path}.GitCommit=`git rev-parse --short=8 HEAD`' \
