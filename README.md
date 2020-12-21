@@ -30,6 +30,8 @@
     - [algo](#algo) 常用算法加密
     - [bpool](#bpool) 切片缓存池
     - [encrypt](#encrypt) 加密流
+    - [habit](#habit) 常用无法分类的库
+    - [logger](#logger) 标准日志及日志接口
     - [password](#password) 密码加密和检查
     - [regex](#regex) 常用正则
     - [ternary](#ternary) 常用三目运算

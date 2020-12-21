@@ -6,7 +6,7 @@ import (
 
 // AddSlashes returns a string with backslashes added before characters
 // that need to be escaped.
-// 使用反斜线引用字符串,对 <' " \>转义.
+// 使用反斜线引用字符串,对' " \转义.
 func AddSlashes(s string) string {
 	var buf bytes.Buffer
 
@@ -22,7 +22,7 @@ func AddSlashes(s string) string {
 
 // StripSlashes returns a string with backslashes stripped off. (\' becomes ' and so on.)
 // Double backslashes (\\) are made into a single backslash (\).
-// 使用反斜线反引用字符串,对 <\' \" \\>反转义.
+// 使用反斜线反引用字符串,对 \' \" \\反转义.
 func StripSlashes(s string) string {
 	var buf bytes.Buffer
 

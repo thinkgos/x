@@ -5,8 +5,8 @@ import (
 	"unicode"
 )
 
-// Recombine 转换驼峰字符串为用sep分隔的字符串
-// example: sep = '_'
+// Recombine 转换驼峰字符串为用delimiter分隔的字符串
+// example: delimiter = '_'
 // HelloWorld -> hello_world
 // Hello_World -> hello_world
 // HiHello_World -> hi_hello_world
@@ -14,9 +14,10 @@ import (
 // IDcom -> i_dcom
 // nameIDCom -> name_id_com
 // nameIDcom -> name_i_dcom
-func Recombine(str string, sep byte) string {
+func Recombine(str string, delimiter byte) string {
+	str = strings.TrimSpace(str)
 	if str == "" {
-		return str
+		return ""
 	}
 
 	var isLastCaseUpper bool
@@ -34,15 +35,15 @@ func Recombine(str string, sep byte) string {
 				if isLastCaseUpper && (isNextCaseUpper || isNextNumberUpper) {
 					buf.WriteRune(v)
 				} else {
-					if str[i-1] != sep && str[i+1] != sep {
-						buf.WriteRune(rune(sep))
+					if str[i-1] != delimiter && str[i+1] != delimiter {
+						buf.WriteRune(rune(delimiter))
 					}
 					buf.WriteRune(v)
 				}
 			} else {
 				buf.WriteRune(v)
 				if i == len(str)-2 && (isNextCaseUpper && !isNextNumberUpper) {
-					buf.WriteRune(rune(sep))
+					buf.WriteRune(rune(delimiter))
 				}
 			}
 		} else {
@@ -59,15 +60,16 @@ func Recombine(str string, sep byte) string {
 }
 
 // UnRecombine 转换sep分隔的字符串为驼峰字符串
-// example: sep = '_'
+// example: delimiter = '_'
 // hello_world -> HelloWorld
-func UnRecombine(str string, sep byte) string {
+func UnRecombine(str string, delimiter byte) string {
+	str = strings.TrimSpace(str)
 	if str == "" {
 		return ""
 	}
 
 	bStr := strings.Builder{}
-	for _, s := range strings.Split(str, string(sep)) {
+	for _, s := range strings.Split(str, string(delimiter)) {
 		bStr.WriteString(strings.Title(s))
 	}
 	return bStr.String()
@@ -80,7 +82,7 @@ type Recode struct {
 
 // NewRecode 创建一个Recode,以initialisms为自定义的Replacer
 // example:
-// API -> Api
+// API -> api
 // ID -> id
 func NewRecode(initialisms []string) *Recode {
 	initialismsForReplacer := make([]string, 0, len(initialisms)*2)
@@ -92,17 +94,17 @@ func NewRecode(initialisms []string) *Recode {
 }
 
 // Recombine 转换驼峰字符串为用sep分隔的字符串,特殊字符由initialisms决定取代
-// example1: sep = '_'
+// example1: delimiter = '_'
 // HelloWorld -> hello_world
 // Hello_World -> hello_world
 // HiHello_World -> hi_hello_world
-// example2: sep = '_' initialisms = [ID]
+// example2: delimiter = '_' initialisms = [ID]
 // IDCom -> id_com
 // IDcom -> idcom
 // nameIDCom -> name_id_com
 // nameIDcom -> name_idcom
-func (sf Recode) Recombine(str string, sep byte) string {
-	return Recombine(sf.replacer.Replace(str), sep)
+func (sf Recode) Recombine(str string, delimiter byte) string {
+	return Recombine(sf.replacer.Replace(str), delimiter)
 }
 
 var (
@@ -126,13 +128,23 @@ func init() {
 }
 
 // SnakeCase 转换驼峰字符串为用'_'分隔的字符串,特殊字符由DefaultInitialisms决定取代
-// example2: sep = '_' initialisms = DefaultInitialisms
+// example2: delimiter = '_' initialisms = DefaultInitialisms
 // IDCom -> id_com
 // IDcom -> idcom
 // nameIDCom -> name_id_com
 // nameIDcom -> name_idcom
 func SnakeCase(str string) string {
 	return Recombine(defaultReplacer.Replace(str), '_')
+}
+
+// SnakeCase 转换驼峰字符串为用'-'分隔的字符串,特殊字符由DefaultInitialisms决定取代
+// example2: delimiter = '-' initialisms = DefaultInitialisms
+// IDCom -> id-com
+// IDcom -> idcom
+// nameIDCom -> name-id-com
+// nameIDcom -> name-idcom
+func Kebab(str string) string {
+	return Recombine(defaultReplacer.Replace(str), '-')
 }
 
 // CamelCase to camel case string

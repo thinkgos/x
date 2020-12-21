@@ -242,6 +242,50 @@ func TestSnakeCase(t *testing.T) {
 	}
 }
 
+func TestKebab(t *testing.T) {
+	type args struct {
+		str string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"空字符串",
+			args{str: ""},
+			"",
+		},
+		{
+			"特殊字符IDCom",
+			args{str: "IDCom"},
+			"id-com",
+		},
+		{
+			"特殊字符IDcom",
+			args{str: "IDcom"},
+			"idcom",
+		},
+		{
+			"特殊字符nameIDCom",
+			args{str: "nameIDCom"},
+			"name-id-com",
+		},
+		{
+			"特殊字符nameIDcom",
+			args{str: "nameIDcom"},
+			"name-idcom",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Kebab(tt.args.str); got != tt.want {
+				t.Errorf("SnakeCase() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestCamelCase(t *testing.T) {
 	type args struct {
 		str string
