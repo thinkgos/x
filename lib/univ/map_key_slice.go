@@ -1,10 +1,10 @@
-package habit
+package univ
 
 import (
 	"reflect"
 )
 
-// KeysOfMap 获取m的map的key的切片,要求m为map且key为字符串.
+// KeysOfMap 获取map m的key的切片,要求m为map且key为字符串(string).
 func KeysOfMap(m interface{}) []string {
 	rv := reflect.Indirect(reflect.ValueOf(m))
 	if rv.Kind() == reflect.Invalid {
@@ -26,7 +26,8 @@ func KeysOfMap(m interface{}) []string {
 	return ss
 }
 
-// KeysIntOfMap 获取m的map的key的切片,要求m为map且key为数值.
+// KeysIntOfMap 获取map m的key的切片,要求m为map且key为数值
+// (int,int8,int16,int32,int64,uint,uint8,uint16,uint32,uint64).
 func KeysIntOfMap(m interface{}) []int64 {
 	rv := reflect.Indirect(reflect.ValueOf(m))
 	if rv.Kind() == reflect.Invalid {
