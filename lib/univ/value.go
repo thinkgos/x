@@ -43,7 +43,7 @@ func (v Values) Del(key string) {
 	delete(v, key)
 }
 
-// Parse parses the URL-encoded query string and returns
+// ParseValue parses the URL-encoded query string and returns
 // a map listing the values specified for each key.
 // ParseQuery always returns a non-nil map containing all the
 // valid query parameters found; err describes the first decoding error

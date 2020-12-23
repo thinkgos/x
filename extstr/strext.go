@@ -137,7 +137,7 @@ func SnakeCase(str string) string {
 	return Recombine(defaultReplacer.Replace(str), '_')
 }
 
-// SnakeCase 转换驼峰字符串为用'-'分隔的字符串,特殊字符由DefaultInitialisms决定取代
+// Kebab 转换驼峰字符串为用'-'分隔的字符串,特殊字符由DefaultInitialisms决定取代
 // example2: delimiter = '-' initialisms = DefaultInitialisms
 // IDCom -> id-com
 // IDcom -> idcom

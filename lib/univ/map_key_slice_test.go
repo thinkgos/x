@@ -72,12 +72,12 @@ func TestKeysOfMap(t *testing.T) {
 	}
 }
 
-// Int64Slice attaches the methods of Interface to []int64, sorting a increasing order.
-type Int64Slice []int64
+// Int64Slices attaches the methods of Interface to []int64, sorting a increasing order.
+type Int64Slices []int64
 
-func (p Int64Slice) Len() int           { return len(p) }
-func (p Int64Slice) Less(i, j int) bool { return p[i] < p[j] }
-func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p Int64Slices) Len() int           { return len(p) }
+func (p Int64Slices) Less(i, j int) bool { return p[i] < p[j] }
+func (p Int64Slices) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 func TestKeysIntOfMap(t *testing.T) {
 	require.Panics(t, func() { KeysIntOfMap("no map") })
@@ -114,7 +114,7 @@ func TestKeysIntOfMap(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := KeysIntOfMap(tt.m)
-			sort.Sort(Int64Slice(got))
+			sort.Sort(Int64Slices(got))
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("KeysIntOfMap() = %v, want %v", got, tt.want)
 			}

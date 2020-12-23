@@ -412,11 +412,11 @@ func TestStructStringSlice(t *testing.T) {
 
 func TestSlice(t *testing.T) {
 	require.Panics(t, func() {
-		New("aa")
+		NewSlice("aa")
 	})
 
 	one, two := "1", "2"
-	sli := New([]StructMuch{{&one, errors.New("1")}, {&two, errors.New("2")}})
+	sli := NewSlice([]StructMuch{{&one, errors.New("1")}, {&two, errors.New("2")}})
 	t.Log(sli.Name())
 	require.Panics(t, func() {
 		sli.StructIntSlice("Err")
@@ -429,13 +429,353 @@ func TestSlice(t *testing.T) {
 		sli.StructStringSlice("NotExist")
 	})
 
-	sli1 := New([]int{1, 2, 3})
+	sli1 := NewSlice([]int{1, 2, 3})
 	require.Panics(t, func() {
 		sli1.StructStringSlice("not a struct or pointer of struct")
 	})
 
-	sli2 := New([]*StructMuch{nil})
+	sli2 := NewSlice([]*StructMuch{nil})
 	require.Panics(t, func() {
 		sli2.StructStringSlice("UID")
 	})
+}
+
+func TestIntSlice(t *testing.T) {
+	require.Panics(t, func() {
+		IntSlice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []int
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]int{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]int{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]int{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IntSlice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("IntSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUintSlice(t *testing.T) {
+	require.Panics(t, func() {
+		UintSlice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []uint
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]uint{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]uint{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]uint{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := UintSlice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("UintSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInt8Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Int8Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []int8
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]int8{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]int8{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]int8{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Int8Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Int8Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUint8Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Uint8Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []uint8
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]uint8{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]uint8{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]uint8{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Uint8Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Uint8Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInt16Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Int16Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []int16
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]int16{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]int16{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]int16{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Int16Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Int16Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUint16Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Uint16Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []uint16
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]uint16{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]uint16{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]uint16{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Uint16Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Uint16Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInt32Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Int32Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []int32
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]int32{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]int32{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]int32{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Int32Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Int32Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUint32Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Uint32Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []uint32
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]uint32{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]uint32{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]uint32{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Uint32Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Uint32Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInt64Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Int64Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []int64
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]int64{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]int64{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]int64{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Int64Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Int64Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUint64Slice(t *testing.T) {
+	require.Panics(t, func() {
+		Uint64Slice([]string{"1", "2"})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []uint64
+	}{
+		{
+			"int",
+			[]int{1, 2, 3, 4},
+			[]uint64{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]uint{1, 2, 3, 4},
+			[]uint64{1, 2, 3, 4},
+		},
+		{
+			"int",
+			[]float64{1.1, 2.1, 3, 4},
+			[]uint64{1, 2, 3, 4},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Uint64Slice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Uint64Slice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
