@@ -3,8 +3,8 @@ name=builder
 # 型号
 model = ${name}
 # 固件版本
-# git describe --tags `git rev-list --tags --max-count=1`
-version = `git describe --tags`
+# git describe --tags `git rev-list --tags --max-count=1` // 只显示标签
+version = `git describe --always --tags`
 # api版本
 APIversion = v0.0.1
 # 设置固件名称

@@ -30,12 +30,13 @@
     - [algo](#algo) 常用算法加密
     - [bpool](#bpool) 切片缓存池
     - [encrypt](#encrypt) 加密流
-    - [habit](#habit) 常用无法分类的库
+    - [habit](#habit) 常用无法分类的常用库
     - [logger](#logger) 标准日志及日志接口
     - [password](#password) 密码加密和检查
     - [regex](#regex) 常用正则
     - [ternary](#ternary) 常用三目运算
     - [textcolor](#textcolor) 字符串文字简易加色
+    - [univ](#univ) 综合库
 
 ## Reference package
 
@@ -53,6 +54,7 @@
 - [inflection](https://github.com/jinzhu/inflection) Pluralizes and singularizes English nouns
 - [compress](https://github.com/klauspost/compress) Optimized compression packages
 - [strcase](https://github.com/iancoleman/strcase) A golang package for converting to snake_case or CamelCase
+- [color](https://github.com/fatih/color) Color package for Go
 ## Reference web
 - [render](https://github.com/thinkgos/render)  render extract from gin,but with optional build tags,useful for net/http or embedded systems,reduce program size
 - [binding](https://github.com/thinkgos/binding)  binding extract from gin,but with optional build tags,useful for net/http or embedded linux systems,reduce program size
