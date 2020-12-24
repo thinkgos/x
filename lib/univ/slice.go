@@ -88,8 +88,9 @@ type Slice struct {
 // NewSlice returns a new *Slice with the slice s. It panics if the s's kind is not slice.
 func NewSlice(s interface{}) *Slice {
 	v := reflect.Indirect(reflect.ValueOf(s))
-	if v.Kind() != reflect.Slice {
-		panic("NewSlice: not slice")
+
+	if kind := v.Kind(); !(kind == reflect.Slice || kind == reflect.Array) {
+		panic("NewSlice: require a slice or array")
 	}
 	return &Slice{v}
 }

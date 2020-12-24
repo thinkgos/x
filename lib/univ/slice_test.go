@@ -96,6 +96,22 @@ func TestStructsIntSlice(t *testing.T) {
 			},
 			[]int{1, 2},
 		},
+		{
+			"array no ptr",
+			args{
+				[2]StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]int{1, 2},
+		},
+		{
+			"array ptr",
+			args{
+				[2]*StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]int{1, 2},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -160,6 +176,22 @@ func TestStructsUintSlice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructFloat64{{1.1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]uint{1, 2},
+		},
+		{
+			"array no ptr",
+			args{
+				[2]StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]uint{1, 2},
+		},
+		{
+			"array ptr",
+			args{
+				[2]*StructInt8{{1, "1"}, {2, "2"}},
 				"UID",
 			},
 			[]uint{1, 2},
@@ -232,6 +264,22 @@ func TestStructsInt64Slice(t *testing.T) {
 			},
 			[]int64{1, 2},
 		},
+		{
+			"array no ptr",
+			args{
+				[2]StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]int64{1, 2},
+		},
+		{
+			"array ptr",
+			args{
+				[2]*StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]int64{1, 2},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -296,6 +344,22 @@ func TestStructsUint64Slice(t *testing.T) {
 			"ptr",
 			args{
 				[]*StructFloat64{{1.1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]uint64{1, 2},
+		},
+		{
+			"array no ptr",
+			args{
+				[2]StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]uint64{1, 2},
+		},
+		{
+			"array ptr",
+			args{
+				[2]*StructInt8{{1, "1"}, {2, "2"}},
 				"UID",
 			},
 			[]uint64{1, 2},
@@ -399,6 +463,22 @@ func TestStructStringSlice(t *testing.T) {
 				"UID",
 			},
 			[]string{"1.1", "2"},
+		},
+		{
+			"array integer no ptr",
+			args{
+				[2]StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]string{"1", "2"},
+		},
+		{
+			"array integer ptr",
+			args{
+				[2]*StructInt8{{1, "1"}, {2, "2"}},
+				"UID",
+			},
+			[]string{"1", "2"},
 		},
 	}
 	for _, tt := range tests {
