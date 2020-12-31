@@ -63,3 +63,15 @@
 - [user_agent](https://github.com/mssola/user_agent) HTTP User Agent parser for the Go programming language.
 ## other 
 - [ants](https://github.com/panjf2000/ants) ants is a high-performance and low-cost goroutine pool in Go
+
+## Donation
+
+if package help you a lot,you can support us by:
+
+**Alipay**
+
+![alipay](https://github.com/thinkgos/thinkgos/blob/master/asserts/alipay.jpg)
+
+**WeChat Pay**
+
+![wxpay](https://github.com/thinkgos/thinkgos/blob/master/asserts/wxpay.jpg)
