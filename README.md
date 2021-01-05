@@ -55,15 +55,23 @@
 - [compress](https://github.com/klauspost/compress) Optimized compression packages
 - [strcase](https://github.com/iancoleman/strcase) A golang package for converting to snake_case or CamelCase
 - [color](https://github.com/fatih/color) Color package for Go
+- [runewidth](https://github.com/mattn/go-runewidth) Provides functions to get fixed width of the character or string.
+- [nuid](https://github.com/nats-io/nuid) NATS Unique Identifiers
+- [ntp](https://github.com/beevik/ntp) a simple ntp client package for go
 ## Reference web
 - [render](https://github.com/thinkgos/render)  render extract from gin,but with optional build tags,useful for net/http or embedded systems,reduce program size
 - [binding](https://github.com/thinkgos/binding)  binding extract from gin,but with optional build tags,useful for net/http or embedded linux systems,reduce program size
+- [schema](https://github.com/gorilla/schema) Package gorilla/schema fills a struct with form values.
 - [gin-middlewares](https://github.com/thinkgos/gin-middlewares) middleware for Gin
 - [http-middlewares](https://github.com/thinkgos/http-middlewares)  middleware for net/http
 - [user_agent](https://github.com/mssola/user_agent) HTTP User Agent parser for the Go programming language.
 ## other 
 - [ants](https://github.com/panjf2000/ants) ants is a high-performance and low-cost goroutine pool in Go
-
+- [treeprint](https://github.com/xlab/treeprint) Package treeprint provides a simple ASCII tree composing tool.
+- [tablewriter](https://github.com/olekukonko/tablewriter) Generate ASCII table on the fly
+- [promptui](https://github.com/manifoldco/promptui) Interactive prompt for command-line applications
+- [go-prompt](https://github.com/c-bata/go-prompt) Building powerful interactive prompts in Go, inspired by python-prompt-toolkit.
+- [cidranger](https://github.com/yl2chen/cidranger) Fast IP to CIDR lookup in Golang
 ## Donation
 
 if package help you a lot,you can support us by:
