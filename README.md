@@ -1,13 +1,13 @@
-# go-core-package
+# x
 
 [![GoDoc](https://godoc.org/github.com/thinkgos/x?status.svg)](https://godoc.org/github.com/thinkgos/x)
 [![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/thinkgos/x?tab=doc)
-[![Build Status](https://www.travis-ci.org/thinkgos/go-core-package.svg?branch=master)](https://www.travis-ci.org/thinkgos/go-core-package)
-[![codecov](https://codecov.io/gh/thinkgos/go-core-package/branch/master/graph/badge.svg)](https://codecov.io/gh/thinkgos/go-core-package)
+[![Build Status](https://www.travis-ci.org/thinkgos/x.svg?branch=master)](https://www.travis-ci.org/thinkgos/x)
+[![codecov](https://codecov.io/gh/thinkgos/x/branch/master/graph/badge.svg)](https://codecov.io/gh/thinkgos/x)
 ![Action Status](https://github.com/thinkgos/x/workflows/Go/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thinkgos/x)](https://goreportcard.com/report/github.com/thinkgos/x)
 [![License](https://img.shields.io/github/license/thinkgos/x)](https://github.com/thinkgos/x/raw/master/LICENSE)
-[![Tag](https://img.shields.io/github/v/tag/thinkgos/go-core-package)](https://github.com/thinkgos/x/tags)
+[![Tag](https://img.shields.io/github/v/tag/thinkgos/x)](https://github.com/thinkgos/x/tags)
 
 
 ## Feature 
