@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/thinkgos/go-core-package/internal/mock"
-	"github.com/thinkgos/go-core-package/lib/encrypt"
+	"github.com/thinkgos/x/internal/mock"
+	"github.com/thinkgos/x/lib/encrypt"
 )
 
 func TestConn(t *testing.T) {

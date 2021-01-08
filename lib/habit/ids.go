@@ -1,7 +1,7 @@
 package habit
 
 import (
-	"github.com/thinkgos/go-core-package/extstr"
+	"github.com/thinkgos/x/extstr"
 )
 
 // ParseIdsGroup 解析以','分隔的批量id

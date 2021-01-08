@@ -1,7 +1,7 @@
 package extstr
 
 import (
-	"github.com/thinkgos/go-core-package/internal/bytesconv"
+	"github.com/thinkgos/x/internal/bytesconv"
 )
 
 // Str2Bytes Convert different types to byte slice using types and functions in

@@ -18,7 +18,7 @@ package extbase64
 import (
 	"encoding/base64"
 
-	"github.com/thinkgos/go-core-package/internal/bytesconv"
+	"github.com/thinkgos/x/internal/bytesconv"
 )
 
 // Encode base64 encode bytes

@@ -1,13 +1,13 @@
 # go-core-package
 
-[![GoDoc](https://godoc.org/github.com/thinkgos/go-core-package?status.svg)](https://godoc.org/github.com/thinkgos/go-core-package)
-[![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/thinkgos/go-core-package?tab=doc)
+[![GoDoc](https://godoc.org/github.com/thinkgos/x?status.svg)](https://godoc.org/github.com/thinkgos/x)
+[![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/thinkgos/x?tab=doc)
 [![Build Status](https://www.travis-ci.org/thinkgos/go-core-package.svg?branch=master)](https://www.travis-ci.org/thinkgos/go-core-package)
 [![codecov](https://codecov.io/gh/thinkgos/go-core-package/branch/master/graph/badge.svg)](https://codecov.io/gh/thinkgos/go-core-package)
-![Action Status](https://github.com/thinkgos/go-core-package/workflows/Go/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/thinkgos/go-core-package)](https://goreportcard.com/report/github.com/thinkgos/go-core-package)
-[![License](https://img.shields.io/github/license/thinkgos/go-core-package)](https://github.com/thinkgos/go-core-package/raw/master/LICENSE)
-[![Tag](https://img.shields.io/github/v/tag/thinkgos/go-core-package)](https://github.com/thinkgos/go-core-package/tags)
+![Action Status](https://github.com/thinkgos/x/workflows/Go/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/thinkgos/x)](https://goreportcard.com/report/github.com/thinkgos/x)
+[![License](https://img.shields.io/github/license/thinkgos/x)](https://github.com/thinkgos/x/raw/master/LICENSE)
+[![Tag](https://img.shields.io/github/v/tag/thinkgos/go-core-package)](https://github.com/thinkgos/x/tags)
 
 
 ## Feature 
@@ -65,6 +65,8 @@
 - [gin-middlewares](https://github.com/thinkgos/gin-middlewares) middleware for Gin
 - [http-middlewares](https://github.com/thinkgos/http-middlewares)  middleware for net/http
 - [user_agent](https://github.com/mssola/user_agent) HTTP User Agent parser for the Go programming language.
+- [resty](https://github.com/go-resty/resty) Simple HTTP and REST client library for Go
+- [gout](https://github.com/guonaihong/gout) gout to become the Swiss Army Knife of the http client 
 ## other 
 - [ants](https://github.com/panjf2000/ants) ants is a high-performance and low-cost goroutine pool in Go
 - [treeprint](https://github.com/xlab/treeprint) Package treeprint provides a simple ASCII tree composing tool.
@@ -72,6 +74,12 @@
 - [promptui](https://github.com/manifoldco/promptui) Interactive prompt for command-line applications
 - [go-prompt](https://github.com/c-bata/go-prompt) Building powerful interactive prompts in Go, inspired by python-prompt-toolkit.
 - [cidranger](https://github.com/yl2chen/cidranger) Fast IP to CIDR lookup in Golang
+- [go-version](https://github.com/hashicorp/go-version) A Go (golang) library for parsing and verifying versions and version constraints.
+## image
+- [barcode](github.com/boombuler/barcode) This is a package for GO which can be used to create different types of barcodes.
+- [qrcode](github.com/skip2/go-qrcode) QR Code encoder (Go)
+- [gozxing](https://github.com/makiuchi-d/gozxing) ZXing is an open-source, multi-format 1D/2D barcode image processing library for Java. This project is a port of ZXing core library to pure Go.
+
 ## Donation
 
 if package help you a lot,you can support us by:

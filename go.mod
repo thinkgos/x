@@ -1,4 +1,4 @@
-module github.com/thinkgos/go-core-package
+module github.com/thinkgos/x
 
 go 1.15
 

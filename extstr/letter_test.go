@@ -3,7 +3,7 @@ package extstr
 import (
 	"testing"
 
-	"github.com/thinkgos/go-core-package/extrand"
+	"github.com/thinkgos/x/extrand"
 )
 
 func TestIsLetter(t *testing.T) {

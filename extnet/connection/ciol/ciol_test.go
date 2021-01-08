@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/time/rate"
 
-	"github.com/thinkgos/go-core-package/internal/mock"
+	"github.com/thinkgos/x/internal/mock"
 )
 
 func mockConn(t *testing.T, data []byte, r, d int, options ...Options) *Conn {

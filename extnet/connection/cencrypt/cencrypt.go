@@ -20,7 +20,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/thinkgos/go-core-package/lib/encrypt"
+	"github.com/thinkgos/x/lib/encrypt"
 )
 
 // Conn conn with encrypt.Cipher

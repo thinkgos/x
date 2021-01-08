@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/thinkgos/go-core-package/internal/mock"
+	"github.com/thinkgos/x/internal/mock"
 )
 
 func MockConn(t *testing.T, data []byte, sizes ...int) {

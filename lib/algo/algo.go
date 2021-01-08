@@ -24,7 +24,7 @@ import (
 	"encoding/hex"
 	"hash"
 
-	"github.com/thinkgos/go-core-package/internal/bytesconv"
+	"github.com/thinkgos/x/internal/bytesconv"
 )
 
 // MD5 calculate the md5 hash of a hex string.

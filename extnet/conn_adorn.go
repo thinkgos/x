@@ -22,13 +22,13 @@ import (
 
 	"go.uber.org/atomic"
 
-	"github.com/thinkgos/go-core-package/extnet/connection/cencrypt"
-	"github.com/thinkgos/go-core-package/extnet/connection/cflow"
-	"github.com/thinkgos/go-core-package/extnet/connection/cgzip"
-	"github.com/thinkgos/go-core-package/extnet/connection/ciol"
-	"github.com/thinkgos/go-core-package/extnet/connection/csnappy"
-	"github.com/thinkgos/go-core-package/extnet/connection/czlib"
-	"github.com/thinkgos/go-core-package/lib/encrypt"
+	"github.com/thinkgos/x/extnet/connection/cencrypt"
+	"github.com/thinkgos/x/extnet/connection/cflow"
+	"github.com/thinkgos/x/extnet/connection/cgzip"
+	"github.com/thinkgos/x/extnet/connection/ciol"
+	"github.com/thinkgos/x/extnet/connection/csnappy"
+	"github.com/thinkgos/x/extnet/connection/czlib"
+	"github.com/thinkgos/x/lib/encrypt"
 )
 
 // BaseAdornTLSClient base adorn tls client

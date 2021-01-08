@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/atomic"
 
-	"github.com/thinkgos/go-core-package/internal/mock"
+	"github.com/thinkgos/x/internal/mock"
 )
 
 func TestAdorn(t *testing.T) {

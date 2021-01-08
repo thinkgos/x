@@ -17,7 +17,7 @@ package password
 import (
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/thinkgos/go-core-package/internal/bytesconv"
+	"github.com/thinkgos/x/internal/bytesconv"
 )
 
 var _ Verify = BCrypt{}

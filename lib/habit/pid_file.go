@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/thinkgos/go-core-package/extos"
+	"github.com/thinkgos/x/extos"
 )
 
 // WritePidFile 写pid到文件中,默认写到执行文件目录下,并以执行文件名.pid命名

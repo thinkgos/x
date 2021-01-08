@@ -8,13 +8,13 @@ import (
 )
 
 // Microsecond time.Time 转为 微秒
-func Microsecond(tm time.Time) int64 {
-	return tm.UnixNano() / int64(time.Microsecond)
+func Microsecond(t time.Time) int64 {
+	return t.UnixNano() / int64(time.Microsecond)
 }
 
 // Millisecond time.Time 转为 毫秒
-func Millisecond(tm time.Time) int64 {
-	return tm.UnixNano() / int64(time.Millisecond)
+func Millisecond(t time.Time) int64 {
+	return t.UnixNano() / int64(time.Millisecond)
 }
 
 // Time 毫秒转time.Time

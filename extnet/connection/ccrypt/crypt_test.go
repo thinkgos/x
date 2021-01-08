@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/thinkgos/go-core-package/internal/mock"
+	"github.com/thinkgos/x/internal/mock"
 )
 
 func mockWithConfig(t *testing.T, data []byte, cfg Config) {
