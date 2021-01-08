@@ -17,6 +17,16 @@ func Millisecond(t time.Time) int64 {
 	return t.UnixNano() / int64(time.Millisecond)
 }
 
+// NowUS time.Now() 转为 微秒
+func NowUS() int64 {
+	return time.Now().UnixNano() / int64(time.Millisecond)
+}
+
+// NowMS time.Now() 转为 毫秒
+func NowMS() int64 {
+	return time.Now().UnixNano() / int64(time.Millisecond)
+}
+
 // Time 毫秒转time.Time
 func Time(msec int64) time.Time {
 	return time.Unix(msec/1000, (msec%1000)*int64(time.Millisecond))

@@ -11,6 +11,8 @@ func TestTime(t *testing.T) {
 	ts := time.Now()
 	t.Log(Microsecond(ts))
 	t.Log(Millisecond(ts))
+	t.Log(NowUS())
+	t.Log(NowMS())
 	t.Log(Time(Millisecond(ts)))
 	Sleep(1)
 	USleep(10)
