@@ -56,7 +56,7 @@
 - [strcase](https://github.com/iancoleman/strcase) A golang package for converting to snake_case or CamelCase
 - [color](https://github.com/fatih/color) Color package for Go
 - [runewidth](https://github.com/mattn/go-runewidth) Provides functions to get fixed width of the character or string.
-- [nuid](https://github.com/nats-io/nuid) NATS Unique Identifiers
+
 - [ntp](https://github.com/beevik/ntp) a simple ntp client package for go
 ## Reference web
 - [render](https://github.com/thinkgos/render)  render extract from gin,but with optional build tags,useful for net/http or embedded systems,reduce program size
@@ -75,6 +75,10 @@
 - [go-prompt](https://github.com/c-bata/go-prompt) Building powerful interactive prompts in Go, inspired by python-prompt-toolkit.
 - [cidranger](https://github.com/yl2chen/cidranger) Fast IP to CIDR lookup in Golang
 - [go-version](https://github.com/hashicorp/go-version) A Go (golang) library for parsing and verifying versions and version constraints.
+
+## id
+- [nuid](https://github.com/nats-io/nuid) NATS Unique Identifiers
+- [xid](https://github.com/rs/xid) xid is a globally unique id generator thought for the web
 ## image
 - [barcode](github.com/boombuler/barcode) This is a package for GO which can be used to create different types of barcodes.
 - [qrcode](github.com/skip2/go-qrcode) QR Code encoder (Go)

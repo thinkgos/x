@@ -34,16 +34,15 @@ type ContextDialer interface {
 type AdornConn func(conn net.Conn) net.Conn
 
 // AdornConnsChain defines a adornConn array.
-// NOTE: 在conn read或write调用过程是在链上从后往前执行的,(类似栈,先进后执行,后进先执行),
-//  所以统计类的应放在链头,也就是AfterChains的第一个,最靠近出口
+// NOTE: 在conn read或write调用过程是在链上从后往前执行的,(类似洋葱,包在最外面的选执行),
+//  所以基础链,统计链的应放在链头,也就是chains的第一个,最靠近出口
 type AdornConnsChain []AdornConn
 
 // Client tcp dialer
 type Client struct {
-	Timeout          time.Duration   // timeout for dial
-	BaseAdorn        AdornConn       // base adorn conn
-	AfterAdornChains AdornConnsChain // chains after base
-	Forward          Dialer          // if set it will use forward.
+	Timeout     time.Duration   // timeout for dial
+	AdornChains AdornConnsChain // adorn chains
+	Forward     Dialer          // if set it will use forward.
 }
 
 // Dial connects to the address on the named network.
@@ -70,10 +69,7 @@ func (sf *Client) DialContext(ctx context.Context, network, addr string) (net.Co
 	if err != nil {
 		return nil, err
 	}
-	if sf.BaseAdorn != nil {
-		conn = sf.BaseAdorn(conn)
-	}
-	for _, chain := range sf.AfterAdornChains {
+	for _, chain := range sf.AdornChains {
 		conn = chain(conn)
 	}
 	return conn, nil
@@ -104,30 +100,23 @@ func DialContext(ctx context.Context, d Dialer, network, address string) (net.Co
 
 type listener struct {
 	net.Listener
-	BaseAdornConn AdornConn
-	AfterChains   AdornConnsChain
+	AdornChains AdornConnsChain
 }
 
 // Listen announces on the local network address and afterChains
-func Listen(network, addr string, afterChains ...AdornConn) (net.Listener, error) {
-	return ListenWith(network, addr, nil, afterChains...)
-}
-
-// ListenWith announces on the local network address , base  afterChains
-func ListenWith(network, addr string, base AdornConn, afterChains ...AdornConn) (net.Listener, error) {
+func Listen(network, addr string, chains ...AdornConn) (net.Listener, error) {
 	l, err := net.Listen(network, addr)
 	if err != nil {
 		return nil, err
 	}
-	return NewListener(l, base, afterChains...), nil
+	return NewListener(l, chains...), nil
 }
 
 // NewListener new listener
-func NewListener(inner net.Listener, base AdornConn, afterChains ...AdornConn) net.Listener {
+func NewListener(inner net.Listener, chains ...AdornConn) net.Listener {
 	l := new(listener)
 	l.Listener = inner
-	l.BaseAdornConn = base
-	l.AfterChains = afterChains
+	l.AdornChains = chains
 	return l
 }
 
@@ -138,10 +127,7 @@ func (l *listener) Accept() (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	if l.BaseAdornConn != nil {
-		c = l.BaseAdornConn(c)
-	}
-	for _, chain := range l.AfterChains {
+	for _, chain := range l.AdornChains {
 		c = chain(c)
 	}
 	return c, nil

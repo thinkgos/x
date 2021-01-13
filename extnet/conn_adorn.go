@@ -32,21 +32,21 @@ import (
 )
 
 // BaseAdornTLSClient base adorn tls client
-func BaseAdornTLSClient(conf *tls.Config) func(conn net.Conn) net.Conn {
+func BaseAdornTLSClient(conf *tls.Config) AdornConn {
 	return func(conn net.Conn) net.Conn {
 		return tls.Client(conn, conf)
 	}
 }
 
 // BaseAdornTLSServer base adorn tls server
-func BaseAdornTLSServer(conf *tls.Config) func(conn net.Conn) net.Conn {
+func BaseAdornTLSServer(conf *tls.Config) AdornConn {
 	return func(conn net.Conn) net.Conn {
 		return tls.Server(conn, conf)
 	}
 }
 
 // BaseAdornStcp base adorn encrypt with method and password
-func BaseAdornStcp(method, password string) func(conn net.Conn) net.Conn {
+func BaseAdornStcp(method, password string) AdornConn {
 	return func(conn net.Conn) net.Conn {
 		cip, err := encrypt.NewCipher(method, password)
 		if err != nil {
@@ -57,7 +57,7 @@ func BaseAdornStcp(method, password string) func(conn net.Conn) net.Conn {
 }
 
 // AdornSnappy snappy chain
-func AdornSnappy(compress bool) func(conn net.Conn) net.Conn {
+func AdornSnappy(compress bool) AdornConn {
 	if compress {
 		return func(conn net.Conn) net.Conn {
 			return csnappy.New(conn)
@@ -69,13 +69,13 @@ func AdornSnappy(compress bool) func(conn net.Conn) net.Conn {
 }
 
 // AdornGzip gzip chain
-func AdornGzip(compress bool) func(conn net.Conn) net.Conn {
+func AdornGzip(compress bool) AdornConn {
 	return AdornGzipLevel(compress, gzip.DefaultCompression)
 }
 
 // AdornGzipLevel gzip chain with level
 // level see gzip package
-func AdornGzipLevel(compress bool, level int) func(conn net.Conn) net.Conn {
+func AdornGzipLevel(compress bool, level int) AdornConn {
 	if compress {
 		return func(conn net.Conn) net.Conn {
 			return cgzip.NewLevel(conn, level)
@@ -87,19 +87,19 @@ func AdornGzipLevel(compress bool, level int) func(conn net.Conn) net.Conn {
 }
 
 // AdornZlib zlib chain
-func AdornZlib(compress bool) func(net.Conn) net.Conn {
+func AdornZlib(compress bool) AdornConn {
 	return AdornZlibLevel(compress, zlib.DefaultCompression)
 }
 
 // AdornZlibLevel zlib chain with the level
 // level see zlib package
-func AdornZlibLevel(compress bool, level int) func(net.Conn) net.Conn {
+func AdornZlibLevel(compress bool, level int) AdornConn {
 	return AdornZlibLevelDict(compress, level, nil)
 }
 
 // AdornZlibLevelDict zlib chain with the level and dict
 // level see zlib package
-func AdornZlibLevelDict(compress bool, level int, dict []byte) func(net.Conn) net.Conn {
+func AdornZlibLevelDict(compress bool, level int, dict []byte) AdornConn {
 	return func(conn net.Conn) net.Conn {
 		if compress {
 			return czlib.NewLevelDict(conn, level, dict)
@@ -109,14 +109,14 @@ func AdornZlibLevelDict(compress bool, level int, dict []byte) func(net.Conn) ne
 }
 
 // AdornFlow cflow chain
-func AdornFlow(wc, rc, tc *atomic.Uint64) func(conn net.Conn) net.Conn {
+func AdornFlow(wc, rc, tc *atomic.Uint64) AdornConn {
 	return func(conn net.Conn) net.Conn {
 		return &cflow.Conn{Conn: conn, Wc: wc, Rc: rc, Tc: tc}
 	}
 }
 
 // AdornIol ciol chain
-func AdornIol(opts ...ciol.Options) func(conn net.Conn) net.Conn {
+func AdornIol(opts ...ciol.Options) AdornConn {
 	return func(conn net.Conn) net.Conn {
 		return ciol.New(conn, opts...)
 	}
