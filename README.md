@@ -1,4 +1,5 @@
 # x
+ go stand library extend api
 
 [![GoDoc](https://godoc.org/github.com/thinkgos/x?status.svg)](https://godoc.org/github.com/thinkgos/x)
 [![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/thinkgos/x?tab=doc)
@@ -79,6 +80,7 @@
 ## id
 - [nuid](https://github.com/nats-io/nuid) NATS Unique Identifiers
 - [xid](https://github.com/rs/xid) xid is a globally unique id generator thought for the web
+- [snowflake](github.com/bwmarrin/snowflake) A simple to use Go (golang) package to generate or parse Twitter snowflake IDs
 ## image
 - [barcode](github.com/boombuler/barcode) This is a package for GO which can be used to create different types of barcodes.
 - [qrcode](github.com/skip2/go-qrcode) QR Code encoder (Go)
