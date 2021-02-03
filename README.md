@@ -47,6 +47,7 @@
 - [timing](https://github.com/thinkgos/timing) time scheduler
 
 ## Third party base package
+- [go-internal](https://github.com/rogpeppe/go-internal) Selected Go-internal packages factored out from the standard library
 - [go-humanize](https://github.com/dustin/go-humanize) Go Humans! (formatters for units to human friendly sizes)
 - [atomic](https://github.com/uber-go/atomic) Wrapper types for sync/atomic which enforce atomic access
 - [multierr](https://github.com/uber-go/multierr) Combine one or more Go errors together
