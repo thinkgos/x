@@ -8,14 +8,26 @@ import (
 
 func TestImproveCoverage(t *testing.T) {
 	t.Log(RandLetter(16))
+	t.Log(RandNumeric(16))
 	t.Log(RandString(16))
-	t.Log(RandInt64(16))
 	t.Log(RandSymbol(16))
+	t.Log(Rand(16))
+	t.Log(Rand(16, Letter...))
+	t.Log(Rand(16, DigitalLetter...))
+	t.Log(Rand(16, Digital...))
+	t.Log(Rand(16, Symbol...))
+	t.Log(RandInt64(16))
 }
 
-func BenchmarkRandAlpha(b *testing.B) {
+func BenchmarkRandLetter(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		RandLetter(10)
+	}
+}
+
+func BenchmarkRandNumeric(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		RandNumeric(10)
 	}
 }
 
@@ -25,15 +37,21 @@ func BenchmarkRandString(b *testing.B) {
 	}
 }
 
-func BenchmarkRandInt64(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		RandInt64(10)
-	}
-}
-
 func BenchmarkRandSymbol(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		RandSymbol(10)
+	}
+}
+
+func BenchmarkRand(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Rand(10)
+	}
+}
+
+func BenchmarkRandInt64(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		RandInt64(10)
 	}
 }
 

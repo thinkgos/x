@@ -189,7 +189,6 @@ func (g *transformedGetter) Get() (interface{}, bool) {
 			return x1, ok
 		}
 	}
-	panic("not reached")
 }
 
 func (g *transformedGetter) Type() reflect.Type {
