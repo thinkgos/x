@@ -17,38 +17,16 @@ const maxBufSize = 64 * 1024
 // That is not the case for any of the Scan* functions
 // in bufio.
 type Scanner struct {
-	r io.ReadSeeker
-
-	split bufio.SplitFunc
-
-	// buf holds currently buffered data.
-	buf []byte
-
-	// offset holds the file offset of the data
-	// in buf.
-	offset int64
-
-	// atEOF reports whether the buffer
-	// is located at the end of the file.
-	atEOF bool
-
-	// tokens holds any currently unscanned
-	// tokens in buf.
-	tokens [][]byte
-
-	// partialToken holds the size of the partial
-	// token at the start of buf.
-	partialToken int
-
-	// err holds any error encountered.
-	err error
+	r            io.ReadSeeker   // The reader provided by the client.
+	split        bufio.SplitFunc // The function to split the tokens.
+	buf          []byte          // buf holds currently buffered data.
+	offset       int64           // offset holds the file offset of the data in buf.
+	atEOF        bool            // atEOF reports whether the buffer is located at the end of the file.
+	tokens       [][]byte        // tokens holds any currently unscanned tokens in buf.
+	partialToken int             // partialToken holds the size of the partial token at the start of buf.
+	err          error           // err holds any error encountered.
+	scanCalled   bool            // Scan has been called; buffer is in use.
 }
-
-// TODO make NewScanner take a ReaderAt rather
-// than a ReadSeeker.
-
-// TODO provide a FileOffset method that returns
-// the offset of the token in the file.
 
 // NewScanner returns a new Scanner to read tokens
 // in reverse from r. The split function defaults to bufio.ScanLines.
@@ -59,7 +37,7 @@ func NewScanner(r io.ReadSeeker) *Scanner {
 		atEOF: true,
 		split: bufio.ScanLines,
 	}
-	b.offset, b.err = r.Seek(0, 2)
+	b.offset, b.err = r.Seek(0, io.SeekEnd)
 	return b
 }
 
@@ -169,6 +147,7 @@ func (b *Scanner) fillbuf() error {
 // occurred during scanning, except that if it was io.EOF, Err
 // will return nil.
 func (b *Scanner) Scan() bool {
+	b.scanCalled = true
 	if len(b.tokens) > 0 {
 		b.tokens = b.tokens[0 : len(b.tokens)-1]
 	}
@@ -185,6 +164,9 @@ func (b *Scanner) Scan() bool {
 // Split sets the split function for the Scanner. If called, it must be
 // called before Scan. The default split function is bufio.ScanLines.
 func (b *Scanner) Split(split bufio.SplitFunc) {
+	if b.scanCalled {
+		panic("Split called after Scan")
+	}
 	b.split = split
 }
 
