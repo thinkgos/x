@@ -1,8 +1,9 @@
 package parallel
 
 import (
+	"context"
+	"errors"
 	"fmt"
-	"sort"
 	"sync"
 	"testing"
 	"time"
@@ -19,7 +20,7 @@ func TestParallelMaxPar(t *testing.T) {
 	max := 0
 	n := 0
 	total := 0
-	r := New(maxPar)
+	r, _ := WithContext(context.Background(), maxPar)
 	for i := 0; i < totalDo; i++ {
 		r.Do(func() error {
 			mu.Lock()
@@ -43,50 +44,21 @@ func TestParallelMaxPar(t *testing.T) {
 	assert.Equalf(t, maxPar, max, "wrong number of do's ran at once; want %d got %d", maxPar, max)
 }
 
-type intError int
-
-func (intError) Error() string {
-	return "error"
-}
-
 func TestParallelError(t *testing.T) {
-	const (
-		totalDo = 10
-		errDo   = 5
-	)
-	r := New(6)
+	const totalDo = 5
+	r, _ := WithContext(context.Background(), 6)
 	for i := 0; i < totalDo; i++ {
-		i := i
-		if i >= errDo {
-			r.Do(func() error {
-				return intError(i)
-			})
-		} else {
-			r.Do(func() error {
-				return nil
-			})
-		}
+		r.Do(func() error {
+			return errors.New("error happen")
+		})
 	}
 	err := r.Wait()
 	assert.NotNil(t, err)
-	errs := err.(Errors)
-	assert.Equalf(t, totalDo-errDo, len(errs), "wrong error count; want %d got %d", len(errs), totalDo-errDo)
-	ints := make([]int, len(errs))
-	for i, err := range errs {
-		ints[i] = int(err.(intError))
-	}
-	sort.Ints(ints)
-	for i, n := range ints {
-		assert.Equalf(t, i+errDo, n, "unexpected error value; want %d got %d", i+errDo, n)
-	}
 }
 
 func ExampleNew() {
-	p := New(2)
-	p.Do(
-		func() error { return nil },
-		func() error { return nil },
-		func() error { return nil })
+	p, _ := WithContext(context.Background(), 2)
+	p.Do(func() error { return nil })
 	err := p.Wait()
 	fmt.Println(err)
 	// output:

@@ -1,72 +1,54 @@
 // The parallel package provides a way of running functions
 // concurrently while limiting the maximum number running at once.
+// same as errgroup.Group but with a limiter number
 package parallel
 
 import (
-	"fmt"
+	"context"
 	"sync"
 )
 
 // Parallel represents a number of functions running concurrently.
 type Parallel struct {
 	limiter chan struct{}
-	done    chan error
-	err     chan error
-	wg      sync.WaitGroup
+	cancel  func()
+
+	wg sync.WaitGroup
+
+	once sync.Once
+	err  error
 }
 
-// Errors holds any errors encountered during the parallel run.
-type Errors []error
-
-func (errs Errors) Error() string {
-	switch len(errs) {
-	case 0:
-		return "no error"
-	case 1:
-		return errs[0].Error()
-	}
-	return fmt.Sprintf("%s (and %d more)", errs[0].Error(), len(errs)-1)
-}
-
-// New returns a new parallel instance.  It will run up to maxPar
+// WithContext returns a new parallel instance and an associated Context derived from ctx..  It will run up to maxPar
 // functions concurrently.
-func New(maxPar int) *Parallel {
-	r := &Parallel{
+func WithContext(ctx context.Context, maxPar int) (*Parallel, context.Context) {
+	ctx, cancel := context.WithCancel(ctx)
+	return &Parallel{
 		limiter: make(chan struct{}, maxPar),
-		done:    make(chan error),
-		err:     make(chan error),
-	}
-	go func() {
-		var errs Errors
-		for e := range r.done {
-			errs = append(errs, e)
-		}
-		if len(errs) > 0 {
-			r.err <- errs
-		} else {
-			r.err <- nil
-		}
-	}()
-	return r
+		cancel:  cancel,
+	}, ctx
 }
 
 // Do requests that r run f concurrently.  If there are already the maximum
 // number of functions running concurrently, it will block until one of
 // them has completed. Do may itself be called concurrently.
-func (r *Parallel) Do(fs ...func() error) {
-	r.wg.Add(len(fs))
-	for _, tmpf := range fs {
-		r.limiter <- struct{}{}
-		go func(f func() error) {
-			defer func() {
-				r.wg.Done()
-				<-r.limiter
-			}()
-			if err := f(); err != nil {
-				r.done <- err
-			}
-		}(tmpf)
-	}
+func (r *Parallel) Do(f func() error) {
+	r.wg.Add(1)
+	r.limiter <- struct{}{}
+	go func() {
+		defer func() {
+			r.wg.Done()
+			<-r.limiter
+		}()
+		if err := f(); err != nil {
+			r.once.Do(func() {
+				r.err = err
+				if r.cancel != nil {
+					r.cancel()
+				}
+			})
+		}
+	}()
 }
 
 // Wait marks the parallel instance as complete and waits for all the
@@ -74,6 +56,8 @@ func (r *Parallel) Do(fs ...func() error) {
 // Errors value describing all the errors in arbitrary order.
 func (r *Parallel) Wait() error {
 	r.wg.Wait()
-	close(r.done)
-	return <-r.err
+	if r.cancel != nil {
+		r.cancel()
+	}
+	return r.err
 }
