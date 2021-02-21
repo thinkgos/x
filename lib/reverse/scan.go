@@ -73,7 +73,7 @@ func (b *Scanner) fillbuf() error {
 	newOffset := b.offset - int64(space)
 	// Copy old partial token to end of buffer.
 	copy(b.buf[space:], b.buf[0:b.partialToken])
-	_, err := b.r.Seek(newOffset, 0)
+	_, err := b.r.Seek(newOffset, io.SeekStart)
 	if err != nil {
 		return err
 	}

@@ -63,7 +63,7 @@ x
 				"hello",
 			},
 		},
-		// {// TODO: bug 空格并没有略过
+		// { // TODO: bug 空格并没有略过
 		// 	text:   "one" + strings.Repeat(" ", 50),
 		// 	split:  bufio.ScanWords,
 		// 	tokens: []string{"one"},
