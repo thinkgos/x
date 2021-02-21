@@ -16,6 +16,7 @@
 package extrand
 
 import (
+	"math/bits"
 	"math/rand"
 	"time"
 
@@ -23,63 +24,147 @@ import (
 )
 
 const (
-	letterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz"
+	LetterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz"
 	letterStrIdxBits = 6                       // 6 bits to represent a letter index
-	letterStrIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as strDigitalStrIdxBits
+	letterStrIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as digitalLetterStrIdxBits
 	letterStrIdxMax  = 63 / letterStrIdxBits   // # of letter indices fitting in 63 bits
 
-	strDigitalString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789"
-	strDigitalStrIdxBits = 6                           // 6 bits to represent a letter index
-	strDigitalStrIdxMask = 1<<strDigitalStrIdxBits - 1 // All 1-bits, as many as strDigitalStrIdxBits
-	strDigitalStrIdxMax  = 63 / strDigitalStrIdxBits   // # of letter indices fitting in 63 bits
+	DigitalLetterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789"
+	digitalLetterStrIdxBits = 6                              // 6 bits to represent a letter index
+	digitalLetterStrIdxMask = 1<<digitalLetterStrIdxBits - 1 // All 1-bits, as many as digitalLetterStrIdxBits
+	digitalLetterStrIdxMax  = 63 / digitalLetterStrIdxBits   // # of letter indices fitting in 63 bits
 
-	digitalString     = "0123456789"
-	digitalStrIdxBits = 4                           // 4 bits to represent a letter index
-	digitalStrIdxMask = 1<<strDigitalStrIdxBits - 1 // All 1-bits, as many as digitalStrIdxBits
-	digitalStrIdxMax  = 63 / strDigitalStrIdxBits   // # of letter indices fitting in 63 bits
+	DigitalString     = "0123456789"
+	digitalStrIdxBits = 4                              // 4 bits to represent a letter index
+	digitalStrIdxMask = 1<<digitalLetterStrIdxBits - 1 // All 1-bits, as many as digitalStrIdxBits
+	digitalStrIdxMax  = 63 / digitalLetterStrIdxBits   // # of letter indices fitting in 63 bits
 
-	symbolString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`"
+	SymbolString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`"
 	symbolStrIdxBits = 7                       // 7 bits to represent a letter index
-	symbolStrIdxMask = 1<<symbolStrIdxBits - 1 // All 1-bits, as many as strDigitalStrIdxBits
+	symbolStrIdxMask = 1<<symbolStrIdxBits - 1 // All 1-bits, as many as digitalLetterStrIdxBits
 	symbolStrIdxMax  = 63 / symbolStrIdxBits   // # of letter indices fitting in 63 bits
 )
 
+var Letter = []byte(LetterString)
+var DigitalLetter = []byte(DigitalLetterString)
+var Digital = []byte(DigitalString)
+var Symbol = []byte(SymbolString)
+
 var globalRand = rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63() + rand.Int63()))
 
-// RandLetter rand alpha with give length(只包含字母)
-func RandLetter(length int) string {
+// RandLetterBytes rand alpha with give length(只包含字母)
+func RandLetterBytes(length int) []byte {
 	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for strDigitalStrIdxMax letters!
+	// A rand.Int63() generates 63 random bits, enough for digitalLetterStrIdxMax letters!
 	for i, cache, remain := 0, globalRand.Int63(), letterStrIdxMax; i < length; {
 		if remain == 0 {
 			cache, remain = globalRand.Int63(), letterStrIdxMax
 		}
-		if idx := int(cache & letterStrIdxMask); idx < len(letterString) {
-			b[i] = letterString[idx]
+		if idx := int(cache & letterStrIdxMask); idx < len(LetterString) {
+			b[i] = LetterString[idx]
 			i++
 		}
 		cache >>= letterStrIdxBits
 		remain--
 	}
-	return bytesconv.Bytes2Str(b)
+	return b
+}
+
+// RandLetter rand alpha with give length(只包含字母)
+func RandLetter(length int) string { return bytesconv.Bytes2Str(RandLetterBytes(length)) }
+
+// RandNumericBytes rand string with give length(包含数字)
+func RandNumericBytes(length int) []byte {
+	b := make([]byte, length)
+	// A rand.Int63() generates 63 random bits, enough for digitalStrIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), digitalStrIdxMax; i < length; {
+		if remain == 0 {
+			cache, remain = globalRand.Int63(), digitalStrIdxMax
+		}
+		if idx := int(cache & digitalStrIdxMask); idx < len(DigitalString) && !(i == 0 && DigitalString[idx] == '0') {
+			b[i] = DigitalString[idx]
+			i++
+		}
+		cache >>= digitalStrIdxBits
+		remain--
+	}
+	return b
+}
+
+// RandNumeric rand string with give length(包含数字)
+func RandNumeric(length int) string { return bytesconv.Bytes2Str(RandNumericBytes(length)) }
+
+// RandStringBytes rand string with give length(包含字母与数字)
+func RandStringBytes(length int) []byte {
+	b := make([]byte, length)
+	// A rand.Int63() generates 63 random bits, enough for digitalLetterStrIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), digitalLetterStrIdxMax; i < length; {
+		if remain == 0 {
+			cache, remain = globalRand.Int63(), digitalLetterStrIdxMax
+		}
+		if idx := int(cache & digitalLetterStrIdxMask); idx < len(DigitalLetterString) {
+			b[i] = DigitalLetterString[idx]
+			i++
+		}
+		cache >>= digitalLetterStrIdxBits
+		remain--
+	}
+	return b
 }
 
 // RandString rand string with give length(包含字母与数字)
-func RandString(length int) string {
+func RandString(length int) string { return bytesconv.Bytes2Str(RandStringBytes(length)) }
+
+// RandSymbolBytes rand symbol with give length(包含字母数字和特殊符号)
+func RandSymbolBytes(length int) []byte {
 	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for strDigitalStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), strDigitalStrIdxMax; i < length; {
+	// A rand.Int63() generates 63 random bits, enough for symbolStrIdxMax letters!
+	for i, cache, remain := 0, globalRand.Int63(), symbolStrIdxMax; i < length; {
 		if remain == 0 {
-			cache, remain = globalRand.Int63(), strDigitalStrIdxMax
+			cache, remain = globalRand.Int63(), symbolStrIdxMax
 		}
-		if idx := int(cache & strDigitalStrIdxMask); idx < len(strDigitalString) {
-			b[i] = strDigitalString[idx]
+		if idx := int(cache & symbolStrIdxMask); idx < len(SymbolString) {
+			b[i] = SymbolString[idx]
 			i++
 		}
-		cache >>= strDigitalStrIdxBits
+		cache >>= symbolStrIdxBits
 		remain--
 	}
-	return bytesconv.Bytes2Str(b)
+	return b
+}
+
+// RandSymbol rand symbol with give length(包含字母数字和特殊符号)
+func RandSymbol(length int) string { return bytesconv.Bytes2Str(RandSymbolBytes(length)) }
+
+// RandBytes rand bytes(如果没有给出alphabets,将使用DigitalLetter)
+func RandBytes(length int, alphabets ...byte) []byte {
+	if len(alphabets) == 0 {
+		alphabets = DigitalLetter
+	}
+
+	bn := bits.Len(uint(len(alphabets)))
+	mask := int64(1)<<bn - 1
+	max := 63 / bn
+
+	b := make([]byte, length)
+	// A rand.Int63() generates 63 random bits, enough for alphabets letters!
+	for i, cache, remain := 0, globalRand.Int63(), max; i < length; {
+		if remain == 0 {
+			cache, remain = globalRand.Int63(), max
+		}
+		if idx := int(cache & mask); idx < len(alphabets) {
+			b[i] = alphabets[idx]
+			i++
+		}
+		cache >>= bn
+		remain--
+	}
+	return b
+}
+
+// Rand rand bytes(如果没有给出alphabets,将使用DigitalLetter)
+func Rand(length int, alphabets ...byte) string {
+	return bytesconv.Bytes2Str(RandBytes(length, alphabets...))
 }
 
 // RandInt64 rand int64 with give length
@@ -91,32 +176,14 @@ func RandInt64(length int) int64 {
 		if remain == 0 {
 			cache, remain = globalRand.Int63(), digitalStrIdxMax
 		}
-		if idx := int(cache & digitalStrIdxMask); idx < len(digitalString) && !(i == 0 && digitalString[idx] == '0') {
-			val = val*10 + int64(digitalString[idx]-'0')
+		if idx := int(cache & digitalStrIdxMask); idx < len(DigitalString) && !(i == 0 && DigitalString[idx] == '0') {
+			val = val*10 + int64(DigitalString[idx]-'0')
 			i++
 		}
 		cache >>= digitalStrIdxBits
 		remain--
 	}
 	return val
-}
-
-// RandSymbol rand symbol with give length(包含字母数字和特殊符号)
-func RandSymbol(length int) string {
-	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for symbolStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), symbolStrIdxMax; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), symbolStrIdxMax
-		}
-		if idx := int(cache & symbolStrIdxMask); idx < len(symbolString) {
-			b[i] = symbolString[idx]
-			i++
-		}
-		cache >>= symbolStrIdxBits
-		remain--
-	}
-	return bytesconv.Bytes2Str(b)
 }
 
 // Int 随机[min,max)中的值
