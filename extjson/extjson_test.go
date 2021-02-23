@@ -17,4 +17,8 @@ func Test(t *testing.T) {
 	s, err := MarshalToString(ret)
 	require.NoError(t, err)
 	require.Equal(t, `{"id":"123"}`, s)
+
+	s, err = MarshalIndentToString(ret, " ", "  ")
+	require.NoError(t, err)
+	require.Equal(t, "{\n   \"id\": \"123\"\n }", s)
 }

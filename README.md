@@ -17,6 +17,7 @@
 - [extime](#extime) 常用time封装
 - [extimg](#extimg) 常用图片封装
 - [extio](#extio) 常用io
+- [extjson](#extjson) 常用json
 - [extmath](#extmath) 数学常用
 - [extnet](extnet) 常用net方法和自定义net.conn
 - [extos](#extos) 常用os封装
@@ -33,10 +34,12 @@
     - [encrypt](#encrypt) 加密流
     - [habit](#habit) 常用无法分类的常用库
     - [logger](#logger) 标准日志及日志接口
+    - [parallel](#parallel) 有限制的并行控制库
     - [password](#password) 密码加密和检查
     - [regex](#regex) 常用正则
     - [ternary](#ternary) 常用三目运算
     - [textcolor](#textcolor) 字符串文字简易加色
+    - [track](#track) 跟综goroutine的生存,死亡.
     - [univ](#univ) 综合库
 
 ## Reference package
