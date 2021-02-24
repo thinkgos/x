@@ -14,11 +14,23 @@ func TestHideCard(t *testing.T) {
 	require.Equal(t, "1234********345", HideCard("123456789012345"))
 }
 
+func BenchmarkHideCard(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		HideCard("123456789")
+	}
+}
+
 func TestHideMobile(t *testing.T) {
 	require.Equal(t, "******", HideMobile(""))
 	require.Equal(t, "*****", HideMobile("12345"))
 	require.Equal(t, "123**6789", HideMobile("123456789"))
 	require.Equal(t, "123********2345", HideMobile("123456789012345"))
+}
+
+func BenchmarkHideMobile(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		HideMobile("123456789")
+	}
 }
 
 func TestHideName(t *testing.T) {
@@ -43,5 +55,11 @@ func TestHideName(t *testing.T) {
 				t.Errorf("HideName() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func BenchmarkHideName(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		HideName("北京搜狗科技发展有限公司")
 	}
 }
