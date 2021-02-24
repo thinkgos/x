@@ -21,7 +21,7 @@
 - [extmath](#extmath) 数学常用
 - [extnet](extnet) 常用net方法和自定义net.conn
 - [extos](#extos) 常用os封装
-- [extrand](#extrand) 常用rand方法
+- [extrand](#extrand) 常用rand方法,使用crypto/rand
 - [extrsa](#extrsa) rsa简易封装
 - [extssh](#extssh) ssh简易封装
 - [extstr](#extstr) 常用字符串封装

@@ -16,222 +16,145 @@
 package extrand
 
 import (
-	"math/bits"
+	cryptoRand "crypto/rand"
+	"encoding/binary"
+	"math"
 	"math/rand"
-	"time"
-
-	"github.com/thinkgos/x/internal/bytesconv"
 )
 
-const (
-	LetterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz"
-	letterStrIdxBits = 6                       // 6 bits to represent a letter index
-	letterStrIdxMask = 1<<letterStrIdxBits - 1 // All 1-bits, as many as digitalLetterStrIdxBits
-	letterStrIdxMax  = 63 / letterStrIdxBits   // # of letter indices fitting in 63 bits
+// Uint64 returns a non-negative pseudo-random 64-bit integer as an uint64.
+func Uint64() uint64 {
+	var rd [8]byte
 
-	DigitalLetterString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789"
-	digitalLetterStrIdxBits = 6                              // 6 bits to represent a letter index
-	digitalLetterStrIdxMask = 1<<digitalLetterStrIdxBits - 1 // All 1-bits, as many as digitalLetterStrIdxBits
-	digitalLetterStrIdxMax  = 63 / digitalLetterStrIdxBits   // # of letter indices fitting in 63 bits
-
-	DigitalString     = "0123456789"
-	digitalStrIdxBits = 4                              // 4 bits to represent a letter index
-	digitalStrIdxMask = 1<<digitalLetterStrIdxBits - 1 // All 1-bits, as many as digitalStrIdxBits
-	digitalStrIdxMax  = 63 / digitalLetterStrIdxBits   // # of letter indices fitting in 63 bits
-
-	SymbolString     = "QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`"
-	symbolStrIdxBits = 7                       // 7 bits to represent a letter index
-	symbolStrIdxMask = 1<<symbolStrIdxBits - 1 // All 1-bits, as many as digitalLetterStrIdxBits
-	symbolStrIdxMax  = 63 / symbolStrIdxBits   // # of letter indices fitting in 63 bits
-)
-
-var Letter = []byte(LetterString)
-var DigitalLetter = []byte(DigitalLetterString)
-var Digital = []byte(DigitalString)
-var Symbol = []byte(SymbolString)
-
-var globalRand = rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63() + rand.Int63()))
-
-// RandLetterBytes rand alpha with give length(只包含字母)
-func RandLetterBytes(length int) []byte {
-	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for digitalLetterStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), letterStrIdxMax; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), letterStrIdxMax
-		}
-		if idx := int(cache & letterStrIdxMask); idx < len(LetterString) {
-			b[i] = LetterString[idx]
-			i++
-		}
-		cache >>= letterStrIdxBits
-		remain--
+	_, err := cryptoRand.Read(rd[:])
+	if err != nil {
+		return rand.Uint64()
 	}
-	return b
+	return binary.LittleEndian.Uint64(rd[:])
 }
 
-// RandLetter rand alpha with give length(只包含字母)
-func RandLetter(length int) string { return bytesconv.Bytes2Str(RandLetterBytes(length)) }
-
-// RandNumericBytes rand string with give length(包含数字)
-func RandNumericBytes(length int) []byte {
-	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for digitalStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), digitalStrIdxMax; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), digitalStrIdxMax
-		}
-		if idx := int(cache & digitalStrIdxMask); idx < len(DigitalString) && !(i == 0 && DigitalString[idx] == '0') {
-			b[i] = DigitalString[idx]
-			i++
-		}
-		cache >>= digitalStrIdxBits
-		remain--
-	}
-	return b
+// Int63 returns a non-negative pseudo-random 63-bit integer as an int64.
+func Int63() int64 {
+	return int64(Uint64() & math.MaxInt64)
 }
 
-// RandNumeric rand string with give length(包含数字)
-func RandNumeric(length int) string { return bytesconv.Bytes2Str(RandNumericBytes(length)) }
-
-// RandStringBytes rand string with give length(包含字母与数字)
-func RandStringBytes(length int) []byte {
-	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for digitalLetterStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), digitalLetterStrIdxMax; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), digitalLetterStrIdxMax
-		}
-		if idx := int(cache & digitalLetterStrIdxMask); idx < len(DigitalLetterString) {
-			b[i] = DigitalLetterString[idx]
-			i++
-		}
-		cache >>= digitalLetterStrIdxBits
-		remain--
+// Int63n returns, as an int64, a non-negative pseudo-random number in [0,n).
+// It panics if n <= 0.
+func Int63n(n int64) int64 {
+	if n <= 0 {
+		panic("invalid argument to Int63n")
 	}
-	return b
+	if n&(n-1) == 0 { // n is power of two, can mask
+		return Int63() & (n - 1)
+	}
+	max := int64((1 << 63) - 1 - (1<<63)%uint64(n))
+	v := Int63()
+	for v > max {
+		v = Int63()
+	}
+	return v % n
 }
 
-// RandString rand string with give length(包含字母与数字)
-func RandString(length int) string { return bytesconv.Bytes2Str(RandStringBytes(length)) }
+// Uint32 returns a pseudo-random 32-bit value as a uint32.
+func Uint32() uint32 {
+	var rd [4]byte
 
-// RandSymbolBytes rand symbol with give length(包含字母数字和特殊符号)
-func RandSymbolBytes(length int) []byte {
-	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for symbolStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), symbolStrIdxMax; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), symbolStrIdxMax
-		}
-		if idx := int(cache & symbolStrIdxMask); idx < len(SymbolString) {
-			b[i] = SymbolString[idx]
-			i++
-		}
-		cache >>= symbolStrIdxBits
-		remain--
+	_, err := cryptoRand.Read(rd[:])
+	if err != nil {
+		return rand.Uint32()
 	}
-	return b
+	return binary.LittleEndian.Uint32(rd[:])
 }
 
-// RandSymbol rand symbol with give length(包含字母数字和特殊符号)
-func RandSymbol(length int) string { return bytesconv.Bytes2Str(RandSymbolBytes(length)) }
+// Int31 returns a non-negative pseudo-random 31-bit integer as an int32.
+func Int31() int32 { return int32(Uint32() & math.MaxInt32) }
 
-// RandBytes rand bytes(如果没有给出alphabets,将使用DigitalLetter)
-func RandBytes(length int, alphabets ...byte) []byte {
-	if len(alphabets) == 0 {
-		alphabets = DigitalLetter
+// Int31n returns, as an int32, a non-negative pseudo-random number in [0,n).
+// It panics if n <= 0.
+func Int31n(n int32) int32 {
+	if n <= 0 {
+		panic("invalid argument to Int31n")
 	}
-
-	bn := bits.Len(uint(len(alphabets)))
-	mask := int64(1)<<bn - 1
-	max := 63 / bn
-
-	b := make([]byte, length)
-	// A rand.Int63() generates 63 random bits, enough for alphabets letters!
-	for i, cache, remain := 0, globalRand.Int63(), max; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), max
-		}
-		if idx := int(cache & mask); idx < len(alphabets) {
-			b[i] = alphabets[idx]
-			i++
-		}
-		cache >>= bn
-		remain--
+	if n&(n-1) == 0 { // n is power of two, can mask
+		return Int31() & (n - 1)
 	}
-	return b
+	max := int32((1 << 31) - 1 - (1<<31)%uint32(n))
+	v := Int31()
+	for v > max {
+		v = Int31()
+	}
+	return v % n
 }
 
-// Rand rand bytes(如果没有给出alphabets,将使用DigitalLetter)
-func Rand(length int, alphabets ...byte) string {
-	return bytesconv.Bytes2Str(RandBytes(length, alphabets...))
+// Int returns a non-negative pseudo-random int.
+func Int() int {
+	u := uint(Int63())
+	return int(u << 1 >> 1) // clear sign bit if int == int32
 }
 
-// RandInt64 rand int64 with give length
-func RandInt64(length int) int64 {
-	var val int64
-
-	// A rand.Int63() generates 63 random bits, enough for digitalStrIdxMax letters!
-	for i, cache, remain := 0, globalRand.Int63(), digitalStrIdxMax; i < length; {
-		if remain == 0 {
-			cache, remain = globalRand.Int63(), digitalStrIdxMax
-		}
-		if idx := int(cache & digitalStrIdxMask); idx < len(DigitalString) && !(i == 0 && DigitalString[idx] == '0') {
-			val = val*10 + int64(DigitalString[idx]-'0')
-			i++
-		}
-		cache >>= digitalStrIdxBits
-		remain--
+// Intn returns, as an int, a non-negative pseudo-random number in [0,n).
+// It panics if n <= 0.
+func Intn(n int) int {
+	if n <= 0 {
+		panic("invalid argument to Intn")
 	}
-	return val
+	if n <= math.MaxInt32 {
+		return int(Int31n(int32(n)))
+	}
+	return int(Int63n(int64(n)))
 }
 
-// Int 随机[min,max)中的值
-func Int(min, max int) int {
-	if min > max {
-		panic("invalid argument to Int")
+// Float64 returns, as a float64, a pseudo-random number in [0.0,1.0).
+func Float64() float64 {
+	// A clearer, simpler implementation would be:
+	//	return float64(r.Int63n(1<<53)) / (1<<53)
+	// However, Go 1 shipped with
+	//	return float64(r.Int63()) / (1 << 63)
+	// and we want to preserve that value stream.
+	//
+	// There is one bug in the value stream: r.Int63() may be so close
+	// to 1<<63 that the division rounds up to 1.0, and we've guaranteed
+	// that the result is always less than 1.0.
+	//
+	// We tried to fix this by mapping 1.0 back to 0.0, but since float64
+	// values near 0 are much denser than near 1, mapping 1 to 0 caused
+	// a theoretically significant overshoot in the probability of returning 0.
+	// Instead of that, if we round up to 1, just try again.
+	// Getting 1 only happens 1/2⁵³ of the time, so most clients
+	// will not observe it anyway.
+again:
+	f := float64(Int63()) / (1 << 63)
+	if f == 1 {
+		goto again // resample; this branch is taken O(never)
 	}
-	if min == max {
-		return min
-	}
-	return globalRand.Intn(max-min) + min
+	return f
 }
 
-// Int31 随机[min,max)中的值
-func Int31(min, max int32) int32 {
-	if min > max {
-		panic("invalid argument to Int31")
+// Float32 returns, as a float32, a pseudo-random number in [0.0,1.0).
+func Float32() float32 {
+	// Same rationale as in Float64: we want to preserve the Go 1 value
+	// stream except we want to fix it not to return 1.0
+	// This only happens 1/2²⁴ of the time (plus the 1/2⁵³ of the time in Float64).
+again:
+	f := float32(Float64())
+	if f == 1 {
+		goto again // resample; this branch is taken O(very rarely)
 	}
-	if min == max {
-		return min
-	}
-	return globalRand.Int31n(max-min) + min
+	return f
 }
 
-// Int63 随机[min,max)中的值
-func Int63(min, max int64) int64 {
-	if min > max {
-		panic("invalid argument to Int63")
+// Perm returns, as a slice of n ints, a pseudo-random permutation of the integers [0,n).
+func Perm(n int) []int {
+	m := make([]int, n)
+	// In the following loop, the iteration when i=0 always swaps m[0] with m[0].
+	// A change to remove this useless iteration is to assign 1 to i in the init
+	// statement. But Perm also effects r. Making this change will affect
+	// the final state of r. So this change can't be made for compatibility
+	// reasons for Go 1.
+	for i := 0; i < n; i++ {
+		j := Intn(i + 1)
+		m[i] = m[j]
+		m[j] = i
 	}
-	if min == max {
-		return min
-	}
-	return globalRand.Int63n(max-min) + min
-}
-
-// Float64 随机min,max中的值
-func Float64(min, max float64) float64 {
-	if min > max {
-		panic("invalid argument to Float64")
-	}
-	return min + (max-min)*globalRand.Float64()
-}
-
-// Shuffle pseudo-randomizes the order of elements using the default Source.
-func Shuffle(str string) string {
-	runes := []rune(str)
-	globalRand.Shuffle(len(runes), func(i, j int) {
-		runes[i], runes[j] = runes[j], runes[i]
-	})
-	return string(runes)
+	return m
 }

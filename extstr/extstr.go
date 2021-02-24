@@ -1,6 +1,7 @@
 package extstr
 
 import (
+	"math/rand"
 	"strconv"
 	"strings"
 )
@@ -95,4 +96,13 @@ func SplitInt(s, sep string) []int {
 		res = append(res, v)
 	}
 	return res
+}
+
+// ShuffleString pseudo-randomizes the order of elements using the default Source.
+func Shuffle(str string) string {
+	runes := []rune(str)
+	rand.Shuffle(len(runes), func(i, j int) {
+		runes[i], runes[j] = runes[j], runes[i]
+	})
+	return string(runes)
 }

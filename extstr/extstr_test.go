@@ -224,3 +224,8 @@ func TestSplitInt(t *testing.T) {
 		})
 	}
 }
+
+func TestShuffle(t *testing.T) {
+	t.Log(Shuffle("hello world"))
+	t.Log(Shuffle("hello world"))
+}
