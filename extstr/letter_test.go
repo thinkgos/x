@@ -60,7 +60,7 @@ func TestIsLetters(t *testing.T) {
 		},
 		{
 			"alpha",
-			extrand.RandLetter(8),
+			extrand.Alphabet(8),
 			true,
 		},
 		{
