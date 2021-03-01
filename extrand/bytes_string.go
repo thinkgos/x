@@ -8,10 +8,13 @@ import (
 	"github.com/thinkgos/x/internal/bytesconv"
 )
 
-var Letter = []byte("QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz")
-var Digital = []byte("0123456789")
-var DigitalLetter = []byte("QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789")
-var Symbol = []byte("QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`")
+// previous defined bytes
+var (
+	Letter        = []byte("QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz")
+	Digital       = []byte("0123456789")
+	DigitalLetter = []byte("QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789")
+	Symbol        = []byte("QWERTYUIOPLKJHGFDSAZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~`")
+)
 
 // RandLetter rand alpha with give length(只包含字母)
 func RandLetter(length int) string { return bytesconv.Bytes2Str(RandLetterBytes(length)) }

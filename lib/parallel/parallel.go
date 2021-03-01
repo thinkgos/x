@@ -1,6 +1,7 @@
 // The parallel package provides a way of running functions
 // concurrently while limiting the maximum number running at once.
 // same as errgroup.Group but with a limiter number
+
 package parallel
 
 import (

@@ -98,7 +98,7 @@ func SplitInt(s, sep string) []int {
 	return res
 }
 
-// ShuffleString pseudo-randomizes the order of elements using the default Source.
+// Shuffle pseudo-randomizes the order of elements using the default Source.
 func Shuffle(str string) string {
 	runes := []rune(str)
 	rand.Shuffle(len(runes), func(i, j int) {

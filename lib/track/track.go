@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package track
 
 import (
@@ -18,7 +19,7 @@ import (
 	"sync"
 )
 
-// Context's methods may be called by multiple goroutines simultaneously.
+// Context Context's methods may be called by multiple goroutines simultaneously.
 type Context interface {
 	// Done returns a channel that's closed when work done on behalf of this
 	// context should be closed. Successive calls to Done return the same value.
@@ -55,7 +56,7 @@ type Track struct {
 	err  error
 }
 
-// a Done channel for cancellation.
+// Done a Done channel for cancellation.
 func (sf *Track) Done() chan struct{} {
 	sf.mu.Lock()
 	defer sf.mu.Unlock()
