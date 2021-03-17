@@ -78,7 +78,7 @@ func YearDays(year int) int {
 	return 365
 }
 
-// MonthDays 所在年份月份的总天数
+// MonthDays 所在年份月份的天数
 func MonthDays(year int, month time.Month) int {
 	switch month {
 	case time.January, time.March, time.May, time.July,
@@ -96,10 +96,8 @@ func MonthDays(year int, month time.Month) int {
 	}
 }
 
-// MonthDays2 t 所在时间月份的总天数
-func MonthDays2(t time.Time) int {
-	return MonthDays(t.Year(), t.Month())
-}
+// MonthDays2 t 所在时间月份的天数
+func MonthDays2(t time.Time) int { return MonthDays(t.Year(), t.Month()) }
 
 // Date Format pattern rules.
 var replacer = strings.NewReplacer([]string{
@@ -151,9 +149,7 @@ func Date(t time.Time, layout string) string {
 
 // Now 跟 PHP 中 date 类似的使用方式
 // layout 格式,如"Y-m-d H:i:s".
-func Now(layout string) string {
-	return Date(time.Now(), layout)
-}
+func Now(layout string) string { return Date(time.Now(), layout) }
 
 // Parse parse value use PHP time format.
 func Parse(value string) time.Time {

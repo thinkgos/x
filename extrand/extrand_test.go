@@ -2,7 +2,6 @@ package extrand
 
 import (
 	"math"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -76,12 +75,6 @@ func TestPerm(t *testing.T) {
 func BenchmarkUint64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Uint64()
-	}
-}
-
-func BenchmarkName(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		rand.Uint64()
 	}
 }
 
