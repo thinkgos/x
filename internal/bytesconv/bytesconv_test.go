@@ -3,6 +3,7 @@ package bytesconv
 import (
 	"reflect"
 	"testing"
+	"unsafe"
 )
 
 func TestStr2Bytes(t *testing.T) {
@@ -49,9 +50,26 @@ var testString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 var testBytes = []byte(testString)
 
+// converts string to byte slice without a memory allocation.
+func oldStringToBytes(s string) (b []byte) {
+	strHeader := (*reflect.StringHeader)(unsafe.Pointer(&s))
+
+	return *(*[]byte)(unsafe.Pointer(&reflect.SliceHeader{
+		Data: strHeader.Data,
+		Len:  strHeader.Len,
+		Cap:  strHeader.Len,
+	}))
+}
+
 func BenchmarkStr2Bytes(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = Str2Bytes(testString)
+	}
+}
+
+func BenchmarkOldBytesConvStrToBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		oldStringToBytes(testString)
 	}
 }
 

@@ -31,8 +31,8 @@ func Abs(number int64) int64 {
 // Range 根据范围创建数组,包含指定的元素.
 // start: 起始元素值
 // end: 末尾元素值
-// 若start<end,返回升序的数组
-// 若start>end,返回降序的数组.
+// 若start < end, 返回升序的数组
+// 若start > end, 返回降序的数组.
 func Range(start, end int) []int {
 	length := int(Abs(int64(end-start))) + 1
 	res := make([]int, 0, length)

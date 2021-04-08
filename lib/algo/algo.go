@@ -29,30 +29,26 @@ import (
 
 // MD5 calculate the md5 hash of a hex string.
 func MD5(s string) string {
-	h := md5.New()
-	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
-	return hex.EncodeToString(h.Sum(nil))
+	v := md5.Sum(bytesconv.Str2Bytes(s))
+	return hex.EncodeToString(v[:])
 }
 
 // SHA1 calculate the sha1 hash of a hex string.
 func SHA1(s string) string {
-	h := sha1.New()
-	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
-	return hex.EncodeToString(h.Sum(nil))
+	v := sha1.Sum(bytesconv.Str2Bytes(s))
+	return hex.EncodeToString(v[:])
 }
 
 // SHA256 calculate the sha256 hash of a hex string.
 func SHA256(s string) string {
-	h := sha256.New()
-	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
-	return hex.EncodeToString(h.Sum(nil))
+	v := sha256.Sum256(bytesconv.Str2Bytes(s))
+	return hex.EncodeToString(v[:])
 }
 
 // SHA512 calculate the sha512 hash of a hex string.
 func SHA512(s string) string {
-	h := sha512.New()
-	h.Write(bytesconv.Str2Bytes(s)) // nolint: errCheck
-	return hex.EncodeToString(h.Sum(nil))
+	v := sha512.Sum512(bytesconv.Str2Bytes(s))
+	return hex.EncodeToString(v[:])
 }
 
 // Hash Generate a hex hash value,
