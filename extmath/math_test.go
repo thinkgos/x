@@ -76,6 +76,12 @@ func TestRound(t *testing.T) {
 	}
 }
 
+func BenchmarkRound(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Round(10.45646841318513515, 9)
+	}
+}
+
 func TestAbs(t *testing.T) {
 	tests := []struct {
 		name   string
