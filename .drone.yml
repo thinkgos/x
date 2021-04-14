@@ -4,5 +4,7 @@ name: default
 steps:
   - name: test
     image: golang
+    environment:
+      - GOPROXY=https://goproxy.io,https://goproxy.cn,direct
     commands:
       - go test -v -benchmem -test.bench=".*" -coverprofile=coverage.txt -covermode=atomic  ./...
