@@ -23,17 +23,17 @@ func Alphabet(length int) string { return bytesconv.Bytes2Str(AlphabetBytes(leng
 // AlphabetBytes rand alpha with give length(只包含字母)
 func AlphabetBytes(length int) []byte { return randBytes(length, DefaultAlphabet) }
 
-// Digit rand string with give length(只包含数字)
-func Digit(length int) string { return bytesconv.Bytes2Str(DigitBytes(length)) }
+// Number rand string with give length(只包含数字)
+func Number(length int) string { return bytesconv.Bytes2Str(NumberBytes(length)) }
 
-// DigitBytes rand string with give length(只包含数字)
-func DigitBytes(length int) []byte { return randBytes(length, DefaultDigit) }
+// NumberBytes rand string with give length(只包含数字)
+func NumberBytes(length int) []byte { return randBytes(length, DefaultDigit) }
 
-// AlphaDigit rand string with give length(只包含字母, 数字)
-func AlphaDigit(length int) string { return bytesconv.Bytes2Str(AlphaDigitBytes(length)) }
+// AlphaNumber rand string with give length(只包含字母, 数字)
+func AlphaNumber(length int) string { return bytesconv.Bytes2Str(AlphaNumberBytes(length)) }
 
-// AlphaDigitBytes rand string with give length(只包含字母, 数字)
-func AlphaDigitBytes(length int) []byte { return randBytes(length, DefaultAlphaDigit) }
+// AlphaNumberBytes rand string with give length(只包含字母, 数字)
+func AlphaNumberBytes(length int) []byte { return randBytes(length, DefaultAlphaDigit) }
 
 // Symbol rand symbol with give length(只包含字母, 数字, 特殊符号)
 func Symbol(length int) string { return bytesconv.Bytes2Str(SymbolBytes(length)) }

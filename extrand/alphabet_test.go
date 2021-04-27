@@ -10,8 +10,8 @@ import (
 
 func TestImproveCoverage(t *testing.T) {
 	t.Log(Alphabet(16))
-	t.Log(Digit(16))
-	t.Log(AlphaDigit(16))
+	t.Log(Number(16))
+	t.Log(AlphaNumber(16))
 	t.Log(Symbol(16))
 	t.Log(String(16))
 	t.Log(String(16, DefaultAlphabet...))
@@ -26,15 +26,15 @@ func BenchmarkAlphabet(b *testing.B) {
 	}
 }
 
-func BenchmarkDigit(b *testing.B) {
+func BenchmarkNumber(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Digit(6)
+		Number(6)
 	}
 }
 
-func BenchmarkAlphaDigit(b *testing.B) {
+func BenchmarkAlphaNumber(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AlphaDigit(20)
+		AlphaNumber(20)
 	}
 }
 
@@ -66,7 +66,7 @@ func comRandBytes(length int, alphabets []byte) []byte {
 	bn := bits.Len(uint(len(alphabets)))
 	mask := int64(1)<<bn - 1
 	max := 63 / bn
-	r := rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63()))
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	// A rand.Int63() generates 63 random bits, enough for alphabets letters!
 	for i, cache, remain := 0, r.Int63(), max; i < length; {
