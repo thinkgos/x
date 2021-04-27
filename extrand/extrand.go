@@ -20,6 +20,7 @@ import (
 	"encoding/binary"
 	"math"
 	"math/rand"
+	"time"
 )
 
 // Uint64 returns a non-negative pseudo-random 64-bit integer as an uint64.
@@ -28,7 +29,8 @@ func Uint64() uint64 {
 
 	_, err := cryptoRand.Read(rd[:])
 	if err != nil {
-		return rand.Uint64()
+		r := rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63()))
+		return r.Uint64()
 	}
 	return binary.LittleEndian.Uint64(rd[:])
 }
@@ -61,7 +63,8 @@ func Uint32() uint32 {
 
 	_, err := cryptoRand.Read(rd[:])
 	if err != nil {
-		return rand.Uint32()
+		r := rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63()))
+		return r.Uint32()
 	}
 	return binary.LittleEndian.Uint32(rd[:])
 }

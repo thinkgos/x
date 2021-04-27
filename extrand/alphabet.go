@@ -4,6 +4,7 @@ import (
 	cryptoRand "crypto/rand"
 	"math/bits"
 	"math/rand"
+	"time"
 
 	"github.com/thinkgos/x/internal/bytesconv"
 )
@@ -65,11 +66,12 @@ func randBytes(length int, alphabets []byte) []byte {
 	bn := bits.Len(uint(len(alphabets)))
 	mask := int64(1)<<bn - 1
 	max := 63 / bn
+	r := rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63()))
 
 	// A rand.Int63() generates 63 random bits, enough for alphabets letters!
-	for i, cache, remain := 0, rand.Int63(), max; i < length; {
+	for i, cache, remain := 0, r.Int63(), max; i < length; {
 		if remain == 0 {
-			cache, remain = rand.Int63(), max
+			cache, remain = r.Int63(), max
 		}
 		if idx := int(cache & mask); idx < len(alphabets) {
 			b[i] = alphabets[idx]

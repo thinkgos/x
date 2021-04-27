@@ -22,7 +22,7 @@ func BenchmarkAlphabet(b *testing.B) {
 
 func BenchmarkDigit(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Digit(20)
+		Digit(6)
 	}
 }
 
