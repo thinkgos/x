@@ -1,6 +1,12 @@
 package extrand
 
-import "testing"
+import (
+	cryptoRand "crypto/rand"
+	"math/bits"
+	"math/rand"
+	"testing"
+	"time"
+)
 
 func TestImproveCoverage(t *testing.T) {
 	t.Log(Alphabet(16))
@@ -41,5 +47,50 @@ func BenchmarkSymbol(b *testing.B) {
 func BenchmarkString(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		String(20)
+	}
+}
+
+func cryptoRandBytes(length int, alphabets []byte) []byte {
+	b := make([]byte, length)
+	if _, err := cryptoRand.Read(b); err != nil {
+		panic(err)
+	}
+	for i, v := range b {
+		b[i] = alphabets[v%byte(len(alphabets))]
+	}
+	return b
+}
+
+func comRandBytes(length int, alphabets []byte) []byte {
+	b := make([]byte, length)
+	bn := bits.Len(uint(len(alphabets)))
+	mask := int64(1)<<bn - 1
+	max := 63 / bn
+	r := rand.New(rand.NewSource(time.Now().UnixNano() + rand.Int63() + rand.Int63()))
+
+	// A rand.Int63() generates 63 random bits, enough for alphabets letters!
+	for i, cache, remain := 0, r.Int63(), max; i < length; {
+		if remain == 0 {
+			cache, remain = r.Int63(), max
+		}
+		if idx := int(cache & mask); idx < len(alphabets) {
+			b[i] = alphabets[idx]
+			i++
+		}
+		cache >>= bn
+		remain--
+	}
+	return b
+}
+
+func Benchmark_cryptoRandBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		cryptoRandBytes(10, DefaultSymbol)
+	}
+}
+
+func Benchmark_comRandBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		comRandBytes(10, DefaultSymbol)
 	}
 }
