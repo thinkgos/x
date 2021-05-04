@@ -20,22 +20,21 @@ import (
 	"github.com/thinkgos/x/internal/bytesconv"
 )
 
-var _ Verify = BCrypt{}
+var _ Crypt = BCrypt{}
 
 // BCrypt bcrypt password encryption
 type BCrypt struct{}
 
-// Hash password hash encryption
-func (sf BCrypt) Hash(password, salt string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(salt+password), bcrypt.DefaultCost)
+// GenerateFromPassword password hash encryption
+func (sf BCrypt) GenerateFromPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
-
 	return bytesconv.Bytes2Str(bytes), err
 }
 
-// Compare password hash verification
-func (sf BCrypt) Compare(password, salt, hash string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(salt+password))
+// CompareHashAndPassword password hash verification
+func (sf BCrypt) CompareHashAndPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

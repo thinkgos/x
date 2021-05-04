@@ -15,39 +15,73 @@
 package password
 
 import (
+	"bytes"
 	"crypto/md5"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"io"
 )
 
-var _ Verify = Simple{}
+var _ Crypt = Simple{}
 
 // Simple simple password encryption
 type Simple struct{}
 
-// Hash password hash encryption 加盐法 md5Pwd+`@#$%`+md5Pwd+`^&*()`拼接
-func (sf Simple) Hash(password, salt string) (string, error) {
-	h := md5.New()
-	_, _ = io.WriteString(h, password+salt)
+// Hash password hash encryption 加盐法
+func (sf Simple) GenerateFromPassword(password string) (string, error) {
+	unencodedSalt := make([]byte, maxSaltSize)
+	_, err := io.ReadFull(rand.Reader, unencodedSalt)
+	if err != nil {
+		return "", err
+	}
 
-	md5Pwd := hex.EncodeToString(h.Sum(nil))
-	// 加盐值加密
-	_, _ = io.WriteString(h, salt)
-	_, _ = io.WriteString(h, password)
-	_, _ = io.WriteString(h, `@#$%`+salt)
-	_, _ = io.WriteString(h, md5Pwd)
-	_, _ = io.WriteString(h, `^&*()`+salt)
-	return hex.EncodeToString(h.Sum(nil)), nil
+	pwd := sf.hash(password, string(unencodedSalt))
+	return base64.StdEncoding.EncodeToString(append(unencodedSalt, pwd...)), nil
 }
 
 // Compare password hash verification
-func (sf Simple) Compare(password, salt, hash string) error {
-	h, err := sf.Hash(password, salt)
+func (sf Simple) CompareHashAndPassword(hashedPassword, password string) error {
+	orgRb, err := base64.StdEncoding.DecodeString(hashedPassword)
 	if err != nil {
 		return err
 	}
-	if hash != h {
+
+	if len(orgRb) < maxSaltSize {
+		return ErrCompareFailed
+	}
+	unencodedSalt := orgRb[:maxSaltSize]
+
+	pwd := sf.hash(password, string(unencodedSalt))
+
+	if !bytes.Equal(orgRb[maxSaltSize:], pwd) {
 		return ErrCompareFailed
 	}
 	return nil
+}
+
+const (
+	salt1 = `@#$%`
+	salt2 = `^&*()`
+)
+
+func (Simple) hash(password, salt string) []byte {
+	md5Pwd := md5.Sum([]byte(password))
+
+	build := new(bytes.Buffer)
+	build.Grow(len(password) + len(salt)*3 + len(md5Pwd) + len(salt1) + len(salt2))
+	// 加盐值加密
+	build.WriteString(salt)
+	build.WriteString(password)
+	build.WriteString(salt1)
+	build.WriteString(salt)
+	build.Write(md5Pwd[:])
+	build.WriteString(salt2)
+	build.WriteString(salt)
+
+	src := md5.Sum(build.Bytes())
+
+	dst := make([]byte, hex.EncodedLen(len(src)))
+	hex.Encode(dst, src[:])
+	return dst
 }

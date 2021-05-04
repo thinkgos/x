@@ -15,32 +15,54 @@
 package password
 
 import (
-	"encoding/hex"
+	"bytes"
+	"crypto/rand"
+	"encoding/base64"
+	"io"
 
 	"golang.org/x/crypto/scrypt"
 )
 
-var _ Verify = SCrypt{}
+const maxSaltSize = 16
+
+var _ Crypt = SCrypt{}
 
 // SCrypt scrypt password encryption
 type SCrypt struct{}
 
-// Hash password hash encryption
-func (sf SCrypt) Hash(password, salt string) (string, error) {
-	rb, err := scrypt.Key([]byte(password), []byte(salt), 16384, 8, 1, 32)
+// GenerateFromPassword password hash encryption
+func (SCrypt) GenerateFromPassword(password string) (string, error) {
+	unencodedSalt := make([]byte, maxSaltSize)
+	_, err := io.ReadFull(rand.Reader, unencodedSalt)
 	if err != nil {
 		return "", err
 	}
-	return hex.EncodeToString(rb), nil
+
+	rb, err := scrypt.Key([]byte(password), unencodedSalt, 16384, 8, 1, 32)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(append(unencodedSalt, rb...)), nil
 }
 
-// Compare password hash verification
-func (sf SCrypt) Compare(password, salt, hash string) error {
-	h, err := sf.Hash(password, salt)
+// CompareHashAndPassword password hash verification
+func (SCrypt) CompareHashAndPassword(hashedPassword, password string) error {
+	orgRb, err := base64.StdEncoding.DecodeString(hashedPassword)
 	if err != nil {
 		return err
 	}
-	if hash != h {
+
+	if len(orgRb) < maxSaltSize {
+		return ErrCompareFailed
+	}
+	unencodedSalt := orgRb[:maxSaltSize]
+	rb, err := scrypt.Key([]byte(password), unencodedSalt, 16384, 8, 1, 32)
+	if err != nil {
+		return err
+	}
+
+	if !bytes.Equal(orgRb[maxSaltSize:], rb) {
 		return ErrCompareFailed
 	}
 	return nil

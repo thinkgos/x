@@ -19,10 +19,10 @@ import (
 )
 
 // ErrCompareFailed compare failed
-var ErrCompareFailed = errors.New("verify compare failed")
+var ErrCompareFailed = errors.New("crypt compare failed")
 
-// Verify verify interface
-type Verify interface {
-	Hash(password, salt string) (string, error)
-	Compare(password, salt, hash string) error
+// Crypt crypt interface
+type Crypt interface {
+	GenerateFromPassword(password string) (string, error)
+	CompareHashAndPassword(hashedPassword, password string) error
 }
