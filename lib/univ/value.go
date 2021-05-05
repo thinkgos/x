@@ -87,13 +87,13 @@ func (v Values) Encode(separator, delimiter string) string {
 
 	for _, k := range keys {
 		vs := v[k]
-		for _, v := range vs {
+		for _, vv := range vs {
 			if buf.Len() > 0 {
 				buf.WriteString(delimiter)
 			}
 			buf.WriteString(k)
 			buf.WriteString(separator)
-			buf.WriteString(v)
+			buf.WriteString(vv)
 		}
 	}
 	return buf.String()
